@@ -1,4 +1,4 @@
-const CACHE_NAME = 'retroc-v4';
+const CACHE_NAME = 'retroc-v5';
 const ASSETS = [
   './',
   './index.html',
@@ -9,7 +9,10 @@ const ASSETS = [
   './emulator.js',
   './logo.png',
   './icon.png',
-  './manifest.json'
+  './manifest.json',
+  './normal.mp3',
+  './secret.mp3',
+  './collection.mp3'
 ];
 
 self.addEventListener('install', (e) => {
