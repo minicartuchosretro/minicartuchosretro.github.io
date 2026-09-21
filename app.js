@@ -49,14 +49,43 @@ if (gameId && GAMES[gameId] && !unlockedGames.includes(gameId)) {
   localStorage.setItem('retroc_unlocked', JSON.stringify(unlockedGames));
   sessionStorage.setItem('newly_unlocked', gameId);
   
-  setTimeout(() => {
-    const overlay = document.getElementById('unlock-overlay');
-    if (overlay) {
-      overlay.classList.add('show');
-      if (navigator.vibrate) navigator.vibrate([100, 150, 100, 150, 300]);
-      setTimeout(() => overlay.classList.remove('show'), 2200);
+  const isSecret = GAMES[gameId].hidden;
+  const overlayIcon = document.getElementById('unlock-icon');
+  const overlayText = document.getElementById('unlock-text');
+  const overlay = document.getElementById('unlock-overlay');
+  
+  if (overlayIcon && overlayText && overlay) {
+    if (isSecret) {
+      // Estilo Zelda Épico
+      overlayIcon.innerText = "🗡️"; 
+      overlayText.innerText = "¡Has descubierto un Cartucho Legendario!";
+      overlayIcon.style.textShadow = "0 0 40px #fef08a";
+      overlayText.style.textShadow = "0 0 25px #fef08a";
+      overlayText.style.color = "#4ade80"; // Verde místico
+      
+      const secretAudio = new Audio('./secret.mp3');
+      secretAudio.play().catch(e => console.log("Audio bloqueado por el navegador", e));
+      
+      overlay.classList.add('show-secret');
+      if (navigator.vibrate) navigator.vibrate([200, 100, 200, 100, 800]); // Vibración épica
+      setTimeout(() => overlay.classList.remove('show-secret'), 4500);
+      
+    } else {
+      // Estilo Cartucho Normal
+      overlayIcon.innerText = "✨";
+      overlayText.innerText = "¡Cartucho Encontrado!";
+      overlayIcon.style.textShadow = "0 0 20px #fbbf24";
+      overlayText.style.textShadow = "0 0 15px #fbbf24";
+      overlayText.style.color = "#fff";
+
+      const normalAudio = new Audio('./normal.mp3');
+      normalAudio.play().catch(e => console.log("Audio bloqueado por el navegador", e));
+      
+      overlay.classList.add('show-normal');
+      if (navigator.vibrate) navigator.vibrate([100, 150, 100, 150]);
+      setTimeout(() => overlay.classList.remove('show-normal'), 2200);
     }
-  }, 100);
+  }
 }
 
 checkCollectionRewards();
@@ -81,7 +110,13 @@ function checkCollectionRewards() {
             unlockedGames.push(rKey);
             localStorage.setItem('retroc_unlocked', JSON.stringify(unlockedGames));
             sessionStorage.setItem('newly_unlocked', rKey);
-            setTimeout(() => { showToast(`🎉 ¡Colección "${collName}" completada! Se ha desbloqueado una sorpresa.`, 6000); }, 1000);
+            
+            // Sonido de Colección Completada
+            setTimeout(() => {
+              const collAudio = new Audio('./collection.mp3');
+              collAudio.play().catch(e => console.log("Audio bloqueado", e));
+              showToast(`🎉 ¡Colección "${collName}" completada! Se ha desbloqueado una sorpresa.`, 6000);
+            }, 1000);
           }
         }
       });
