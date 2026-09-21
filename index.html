@@ -18,98 +18,73 @@
     .view-container { display: none; width: 100%; height: 100%; overflow-y: auto; padding-bottom: 40px; }
     .active-view { display: block; }
     
+    /* ANIMACIÓN 1: PANTALLA COMPLETA AL ESCANEAR */
+    #unlock-overlay {
+      position: fixed; top: 0; left: 0; width: 100vw; height: 100dvh;
+      background: radial-gradient(circle, rgba(217, 119, 6, 0.95) 0%, #000 90%);
+      z-index: 99999999; display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      opacity: 0; pointer-events: none;
+    }
+    #unlock-overlay.show { animation: epicUnlock 2.2s cubic-bezier(0.1, 0.8, 0.1, 1) forwards; }
+    
+    @keyframes epicUnlock {
+      0% { opacity: 0; transform: scale(0.5) translateY(50px); filter: brightness(2); }
+      15% { opacity: 1; transform: scale(1.1) translateY(0); filter: brightness(1.5); }
+      30% { opacity: 1; transform: scale(1); filter: brightness(1); }
+      80% { opacity: 1; transform: scale(1); }
+      100% { opacity: 0; transform: scale(1.2); }
+    }
+
     /* LOGO INTERACTIVO */
     .brand-logo { 
-      display: block; 
-      margin: 16px auto; 
-      max-width: 180px; 
-      cursor: pointer;
-      user-select: none;
-      -webkit-tap-highlight-color: transparent;
-      transition: transform 0.1s;
+      display: block; margin: 16px auto; max-width: 180px; 
+      cursor: pointer; user-select: none; -webkit-tap-highlight-color: transparent; transition: transform 0.1s;
     }
     .brand-logo:active { transform: scale(0.92); }
 
-    /* BOTÓN INSTALAR PWA */
     .btn-install {
-      background: linear-gradient(135deg, #3b82f6, #1d4ed8);
-      color: #fff;
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      border-radius: 25px;
-      padding: 12px 20px;
-      font-size: 0.95rem;
-      font-weight: bold;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      margin: 10px auto 20px auto;
-      max-width: 320px;
-      width: 100%;
+      background: linear-gradient(135deg, #3b82f6, #1d4ed8); color: #fff; border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 25px; padding: 12px 20px; font-size: 0.95rem; font-weight: bold; cursor: pointer;
+      display: flex; align-items: center; justify-content: center; gap: 8px; margin: 10px auto 20px auto; max-width: 320px; width: 100%;
       box-shadow: 0 4px 12px rgba(59, 130, 246, 0.35);
     }
     .btn-install:active { transform: scale(0.98); }
 
-    /* PESTAÑAS (TABS) */
+    /* PESTAÑAS */
     #hub-view { padding: 15px; }
     .tabs-container {
-      display: flex;
-      background: #18181b;
-      border-radius: 14px;
-      padding: 6px;
-      margin: 0 auto 20px auto;
-      max-width: 500px;
-      border: 1px solid #27272a;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+      display: flex; background: #18181b; border-radius: 14px; padding: 6px; margin: 0 auto 20px auto;
+      max-width: 500px; border: 1px solid #27272a; box-shadow: 0 4px 10px rgba(0,0,0,0.4);
     }
-
     .tab {
-      flex: 1;
-      text-align: center;
-      padding: 10px 5px;
-      font-size: 0.85rem;
-      font-weight: 700;
-      color: #a1a1aa;
-      border-radius: 10px;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      user-select: none;
-      -webkit-tap-highlight-color: transparent;
+      flex: 1; text-align: center; padding: 10px 5px; font-size: 0.85rem; font-weight: 700; color: #a1a1aa;
+      border-radius: 10px; cursor: pointer; transition: all 0.3s ease; user-select: none; -webkit-tap-highlight-color: transparent;
     }
-
     .tab.active { background: #27272a; color: #fff; box-shadow: 0 2px 8px rgba(0,0,0,0.3); }
     #tab-unlocked.active { color: #4ade80; }
-    #tab-vault.active {
-      background: linear-gradient(135deg, #d97706, #b45309);
-      color: #fff;
-      box-shadow: 0 4px 12px rgba(217, 119, 6, 0.4);
-    }
+    #tab-vault.active { background: linear-gradient(135deg, #d97706, #b45309); color: #fff; box-shadow: 0 4px 12px rgba(217, 119, 6, 0.4); }
 
     .tab-content { display: none; animation: fadeIn 0.25s ease-out forwards; }
     .active-tab-content { display: block; }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
     .games-list { display: flex; flex-direction: column; gap: 12px; max-width: 500px; margin: 0 auto; }
 
     /* TARJETAS */
     .game-card {
-      display: flex;
-      align-items: center;
-      background: #18181b;
-      border: 1px solid #27272a;
-      border-radius: 12px;
-      padding: 10px 14px;
-      gap: 14px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-      cursor: pointer;
-      transition: transform 0.15s, background 0.15s;
+      display: flex; align-items: center; background: #18181b; border: 1px solid #27272a; border-radius: 12px;
+      padding: 10px 14px; gap: 14px; box-shadow: 0 4px 10px rgba(0,0,0,0.3); cursor: pointer; transition: transform 0.15s, background 0.15s;
     }
     .game-card:active { transform: scale(0.98); }
+
+    /* ANIMACIÓN 2: PULSO DORADO EN EL HUB */
+    .card-pulse { animation: goldPulse 1.5s infinite; border: 2px solid #fbbf24 !important; z-index: 10; position: relative; }
+    @keyframes goldPulse {
+      0% { box-shadow: 0 0 0 0 rgba(251, 191, 36, 0.8); transform: scale(1); }
+      50% { box-shadow: 0 0 25px 15px rgba(251, 191, 36, 0); transform: scale(1.03); }
+      100% { box-shadow: 0 0 0 0 rgba(251, 191, 36, 0); transform: scale(1); }
+    }
 
     .card-thumb { width: 58px; height: 58px; border-radius: 8px; object-fit: cover; flex-shrink: 0; border: 1px solid #3f3f46; }
     .card-details { display: flex; flex-direction: column; flex-grow: 1; text-align: left; }
@@ -121,31 +96,22 @@
     .card-locked .card-name { color: #71717a; }
     .card-locked .card-subtext { color: #52525b; }
 
-    .card-vault {
-      background: linear-gradient(135deg, #1c1917, #292524);
-      border: 1px solid #d97706;
-      box-shadow: 0 4px 14px rgba(217, 119, 6, 0.25);
-    }
+    .card-vault { background: linear-gradient(135deg, #1c1917, #292524); border: 1px solid #d97706; box-shadow: 0 4px 14px rgba(217, 119, 6, 0.25); }
     .card-vault .card-thumb { border: 1.5px solid #fbbf24; }
     .card-vault .card-name { color: #fef08a; }
 
     .empty-message {
-      font-size: 0.9rem; color: #52525b; text-align: center; font-style: italic;
-      padding: 30px 10px; background: #121214; border-radius: 12px; border: 1px dashed #27272a;
+      font-size: 0.9rem; color: #52525b; text-align: center; font-style: italic; padding: 30px 10px; background: #121214; border-radius: 12px; border: 1px dashed #27272a;
     }
 
-    /* VISTA DETALLES / INFO */
+    /* VISTA INFO */
     #info-view { padding: 30px 20px; text-align: center; flex-direction: column; align-items: center; }
     #info-view.active-view { display: flex; }
-    
     #info-cover { width: 170px; height: 170px; object-fit: cover; border-radius: 16px; border: 3px solid #3f3f46; box-shadow: 0 8px 16px rgba(0,0,0,0.8); margin-bottom: 20px; }
     #info-title { font-size: 1.6rem; font-weight: bold; margin-bottom: 12px; }
     #info-desc { font-size: 0.95rem; color: #a1a1aa; line-height: 1.5; margin-bottom: 25px; max-width: 400px; }
     
-    .btn {
-      padding: 14px 20px; font-size: 1rem; font-weight: bold; border-radius: 25px; border: none;
-      cursor: pointer; width: 100%; max-width: 320px; margin-bottom: 12px; display: flex; align-items: center; justify-content: center; gap: 8px;
-    }
+    .btn { padding: 14px 20px; font-size: 1rem; font-weight: bold; border-radius: 25px; border: none; cursor: pointer; width: 100%; max-width: 320px; margin-bottom: 12px; display: flex; align-items: center; justify-content: center; gap: 8px; }
     .btn-play { background: #e63946; color: #fff; box-shadow: 0 4px 12px rgba(230,57,70,0.3); }
     .btn-home { background: #27272a; color: #fff; border: 1px solid #3f3f46; }
 
@@ -155,13 +121,20 @@
     #emu-watermark { position: fixed; top: 4px; left: 12px; z-index: 9999999; max-width: 150px; max-height: 36px; object-fit: contain; }
     #top-controls { position: fixed; top: 8px; right: 12px; z-index: 9999999; display: flex; gap: 6px; }
     #top-controls button { background: rgba(20,20,20,0.85); color: #fff; border: 1px solid rgba(255,255,255,0.3); border-radius: 20px; padding: 6px 12px; font-size: 13px; font-weight: bold; cursor: pointer; }
-    #msg { color: #fff; height: 100dvh; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 1.1rem; }
+    #msg { color: #fff; height: 100dvh; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 1.1rem; padding: 0 20px; text-align: center; }
   </style>
 </head>
 <body>
 
+  <!-- PANTALLA DE DESTELLO AL ESCANEAR -->
+  <div id="unlock-overlay">
+    <span style="font-size: 4.5rem; text-shadow: 0 0 20px #fbbf24;">✨</span>
+    <h2 style="margin-top: 15px; text-shadow: 0 0 15px #fbbf24; color: #fff;">¡Cartucho Encontrado!</h2>
+  </div>
+
   <script src="./games.js"></script>
   <script src="./frases.js"></script>
+  <script src="./pistas.js"></script>
 
   <!-- ==================== VISTA 1: HUB ==================== -->
   <div id="hub-view" class="view-container">
@@ -171,7 +144,6 @@
       📲 Instalar Aplicación
     </button>
 
-    <!-- MENÚ DE PESTAÑAS -->
     <div class="tabs-container">
       <div class="tab active" id="tab-unlocked" onclick="switchTab('unlocked')">🎮 Míos (<span id="count-unlocked">0</span>)</div>
       <div class="tab" id="tab-locked" onclick="switchTab('locked')">🔒 Faltan (<span id="count-locked">0</span>)</div>
@@ -179,17 +151,9 @@
     </div>
 
     <div style="max-width: 500px; margin: 0 auto;">
-      <div id="view-unlocked" class="tab-content active-tab-content">
-        <div class="games-list" id="unlocked-list"></div>
-      </div>
-      
-      <div id="view-locked" class="tab-content">
-        <div class="games-list" id="locked-list"></div>
-      </div>
-      
-      <div id="view-vault" class="tab-content">
-        <div class="games-list" id="vault-list"></div>
-      </div>
+      <div id="view-unlocked" class="tab-content active-tab-content"><div class="games-list" id="unlocked-list"></div></div>
+      <div id="view-locked" class="tab-content"><div class="games-list" id="locked-list"></div></div>
+      <div id="view-vault" class="tab-content"><div class="games-list" id="vault-list"></div></div>
     </div>
   </div>
 
@@ -224,7 +188,6 @@
     const gameId = params.get("game");
     const isPlaying = params.get("play") === "true";
 
-    // --- INSTALACIÓN PWA ---
     let deferredPrompt = null;
     const installBtn = document.getElementById('pwa-install-btn');
 
@@ -233,8 +196,7 @@
     }
 
     window.addEventListener('beforeinstallprompt', (e) => {
-      e.preventDefault();
-      deferredPrompt = e;
+      e.preventDefault(); deferredPrompt = e;
       if (installBtn && !gameId) installBtn.style.display = 'flex';
     });
 
@@ -255,13 +217,21 @@
       showToast("✅ ¡Mini Retro Cartuchos instalada con éxito!", 3000);
     });
 
-    // --- SISTEMA DE DESBLOQUEO ---
+    // --- LÓGICA DE NUEVO DESBLOQUEO ---
     let unlockedGames = JSON.parse(localStorage.getItem('retroc_unlocked') || '[]');
 
     if (gameId && GAMES[gameId] && !unlockedGames.includes(gameId)) {
       unlockedGames.push(gameId);
       localStorage.setItem('retroc_unlocked', JSON.stringify(unlockedGames));
-      if (GAMES[gameId].hidden && navigator.vibrate) navigator.vibrate([100, 50, 100]);
+      sessionStorage.setItem('newly_unlocked', gameId); // Bandera para que palpite en el menú
+      
+      // Lanzar destello de pantalla completa
+      setTimeout(() => {
+        const overlay = document.getElementById('unlock-overlay');
+        overlay.classList.add('show');
+        if (navigator.vibrate) navigator.vibrate([100, 150, 100, 150, 300]);
+        setTimeout(() => overlay.classList.remove('show'), 2200);
+      }, 100);
     }
 
     checkCollectionRewards();
@@ -285,9 +255,8 @@
               if (!unlockedGames.includes(rKey)) {
                 unlockedGames.push(rKey);
                 localStorage.setItem('retroc_unlocked', JSON.stringify(unlockedGames));
-                setTimeout(() => {
-                  showToast(`🎉 ¡Colección "${collName}" completada! Se ha desbloqueado una sorpresa en la Bóveda.`, 6000);
-                }, 1000);
+                sessionStorage.setItem('newly_unlocked', rKey); // Para que palpite el regalo
+                setTimeout(() => { showToast(`🎉 ¡Colección "${collName}" completada! Se ha desbloqueado una sorpresa.`, 6000); }, 1000);
               }
             }
           });
@@ -295,7 +264,6 @@
       });
     }
 
-    // --- RUTAS ---
     if (!gameId) {
       document.getElementById('hub-view').classList.add('active-view');
       renderHub();
@@ -320,21 +288,18 @@
       const vaultContainer = document.getElementById('vault-list');
       const vaultTab = document.getElementById('tab-vault');
       
-      unlockedContainer.innerHTML = '';
-      lockedContainer.innerHTML = '';
-      vaultContainer.innerHTML = '';
-
+      unlockedContainer.innerHTML = ''; lockedContainer.innerHTML = ''; vaultContainer.innerHTML = '';
       let uCount = 0; let lCount = 0; let vCount = 0;
 
       Object.keys(GAMES).forEach(key => {
         const game = GAMES[key];
         const isUnlocked = unlockedGames.includes(key);
+        const card = document.createElement('div');
+        card.id = `card-${key}`; // ID Único para encontrarlo al animar
 
         if (game.hidden) {
           if (isUnlocked) {
-            vCount++;
-            const card = document.createElement('div');
-            card.className = 'game-card card-vault';
+            vCount++; card.className = 'game-card card-vault';
             card.onclick = () => window.location.href = `?game=${key}`;
             card.innerHTML = `<img class="card-thumb" src="${game.icon}" alt="${game.title}"><div class="card-details"><span class="card-name">${game.title}</span><span class="card-subtext">${game.reward ? '⭐ Recompensa de Colección' : '✨ Cartucho Secreto'}</span></div><span style="color:#fbbf24; font-size:1.2rem;">▶</span>`;
             vaultContainer.appendChild(card);
@@ -342,16 +307,13 @@
           return; 
         }
 
-        const card = document.createElement('div');
         if (isUnlocked) {
-          uCount++;
-          card.className = 'game-card';
+          uCount++; card.className = 'game-card';
           card.onclick = () => window.location.href = `?game=${key}`;
           card.innerHTML = `<img class="card-thumb" src="${game.icon}" alt="${game.title}"><div class="card-details"><span class="card-name">${game.title}</span><span class="card-subtext">${game.collection ? game.collection : 'Toca para ver detalles'}</span></div><span style="color:#4ade80; font-size:1.2rem;">▶</span>`;
           unlockedContainer.appendChild(card);
         } else {
-          lCount++;
-          card.className = 'game-card card-locked';
+          lCount++; card.className = 'game-card card-locked';
           card.onclick = () => showToast("🔒 Escanea el cartucho NFC físico para desbloquear", 3000);
           card.innerHTML = `<img class="card-thumb" src="${game.icon}" alt="${game.title}"><div class="card-details"><span class="card-name">${game.title}</span><span class="card-subtext">${game.collection ? game.collection + ' • ' : ''}Bloqueado</span></div><span style="color:#52525b; font-size:1.1rem;">🔒</span>`;
           lockedContainer.appendChild(card);
@@ -361,26 +323,40 @@
       document.getElementById('count-unlocked').innerText = uCount;
       document.getElementById('count-locked').innerText = lCount;
       document.getElementById('count-vault').innerText = vCount;
-
       vaultTab.style.display = vCount > 0 ? 'block' : 'none';
 
       if (uCount === 0) unlockedContainer.innerHTML = '<div class="empty-message">No tienes cartuchos desbloqueados aún.<br><br>¡Acerca uno a tu teléfono para empezar!</div>';
       if (lCount === 0) lockedContainer.innerHTML = '<div class="empty-message">¡Felicidades! Tienes todos los cartuchos del catálogo desbloqueados.</div>';
+
+      // ENFOCAR Y HACER PALPITAR EL JUEGO RECIÉN AGREGADO
+      setTimeout(() => {
+        const newlyUnlocked = sessionStorage.getItem('newly_unlocked');
+        if (newlyUnlocked) {
+          const targetCard = document.getElementById(`card-${newlyUnlocked}`);
+          if (targetCard) {
+            // Cambiar a la pestaña correcta automáticamente
+            if (GAMES[newlyUnlocked].hidden) switchTab('vault');
+            else switchTab('unlocked');
+            
+            // Hacer scroll hasta el juego y encender el pulso dorado
+            targetCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            targetCard.classList.add('card-pulse');
+            
+            // Apagar el pulso después de 6 segundos
+            setTimeout(() => { targetCard.classList.remove('card-pulse'); }, 6000);
+          }
+          sessionStorage.removeItem('newly_unlocked');
+        }
+      }, 300);
     }
 
-    let logoClicks = 0;
-    let clickTimer = null;
-    const logoEl = document.getElementById('secret-logo');
-
+    let logoClicks = 0; let clickTimer = null; const logoEl = document.getElementById('secret-logo');
     if (logoEl) {
       logoEl.addEventListener('click', () => {
-        logoClicks++;
-        clearTimeout(clickTimer);
-        clickTimer = setTimeout(() => { logoClicks = 0; }, 2500);
+        logoClicks++; clearTimeout(clickTimer); clickTimer = setTimeout(() => { logoClicks = 0; }, 2500);
         if (logoClicks >= 5) {
-          logoClicks = 0;
-          if (navigator.vibrate) navigator.vibrate([80, 50, 80, 50, 150]);
-          showToast("🕵️ Pista Secreta: Existe un cartucho maldito en el inframundo de Marte...", 5000);
+          logoClicks = 0; if (navigator.vibrate) navigator.vibrate([80, 50, 80, 50, 150]);
+          showToast(PISTAS_SECRETAS[Math.floor(Math.random() * PISTAS_SECRETAS.length)], 5500);
         }
       });
     }
@@ -397,11 +373,9 @@
     function goHome() { window.location.href = `./`; }
 
     function showToast(text, duration) {
-      let t = document.createElement('div');
-      t.innerText = text;
+      let t = document.createElement('div'); t.innerText = text;
       t.style.cssText = "position:fixed; top:70px; left:50%; transform:translateX(-50%); background:rgba(15,15,18,0.95); color:#fff; padding:12px 20px; border-radius:24px; z-index:9999999; font-weight:bold; font-size:13.5px; text-align:center; box-shadow:0 4px 14px rgba(0,0,0,0.7); border:1px solid rgba(255,255,255,0.15); transition:opacity 0.3s; width:85%; max-width:360px;";
-      document.body.appendChild(t);
-      setTimeout(() => { t.style.opacity = '0'; setTimeout(() => t.remove(), 300); }, duration);
+      document.body.appendChild(t); setTimeout(() => { t.style.opacity = '0'; setTimeout(() => t.remove(), 300); }, duration);
     }
 
     function initEmulator() {
@@ -410,41 +384,30 @@
 
       document.getElementById("msg").innerText = FRASES_CARGA[Math.floor(Math.random() * FRASES_CARGA.length)];
 
-      window.EJS_player = '#display';
-      window.EJS_core = selected.system;
-      window.EJS_gameUrl = selected.rom;
-      window.EJS_gameName = selected.title;
-      window.EJS_startOnLoaded = true;
-      window.EJS_pathtodata = 'https://cdn.emulatorjs.org/stable/data/';
+      window.EJS_player = '#display'; window.EJS_core = selected.system; window.EJS_gameUrl = selected.rom;
+      window.EJS_gameName = selected.title; window.EJS_startOnLoaded = true; window.EJS_pathtodata = 'https://cdn.emulatorjs.org/stable/data/';
 
       document.addEventListener('touchstart', function(e) {
         let target = e.target;
         while (target && target !== document.body) {
-          const cls = (target.className || '').toString().toLowerCase();
-          const elemId = (target.id || '').toString().toLowerCase();
+          const cls = (target.className || '').toString().toLowerCase(); const elemId = (target.id || '').toString().toLowerCase();
           if (cls.includes('button') || cls.includes('dpad') || cls.includes('direction') || cls.includes('up') || cls.includes('down') || cls.includes('left') || cls.includes('right') || elemId.includes('button') || elemId.includes('dpad')) {
-            if (navigator.vibrate) navigator.vibrate(15);
-            break;
+            if (navigator.vibrate) navigator.vibrate(15); break;
           }
           target = target.parentNode;
         }
       }, { passive: true });
 
       function styleBtn(el, bg, border, textColor = '#ffffff') {
-        el.style.setProperty('background', bg, 'important');
-        el.style.setProperty('border', border, 'important');
-        el.style.setProperty('color', textColor, 'important');
-        el.style.setProperty('text-shadow', '0 1px 2px rgba(0,0,0,0.8)', 'important');
+        el.style.setProperty('background', bg, 'important'); el.style.setProperty('border', border, 'important');
+        el.style.setProperty('color', textColor, 'important'); el.style.setProperty('text-shadow', '0 1px 2px rgba(0,0,0,0.8)', 'important');
         el.querySelectorAll('*').forEach(child => { child.style.setProperty('color', textColor, 'important'); child.style.setProperty('fill', textColor, 'important'); });
       }
 
       const observer = new MutationObserver(() => {
         document.querySelectorAll('div, button, span').forEach(el => {
-          const cls = (el.className || '').toString().toLowerCase();
-          const elemId = (el.id || '').toString().toLowerCase();
-          const txt = (el.innerText || el.textContent || '').trim().toUpperCase();
-          const isDpad = cls.includes('dpad') || elemId.includes('dpad') || cls.includes('direction') || cls.includes('joystick') || cls.includes('up') || cls.includes('down') || cls.includes('left') || cls.includes('right');
-
+          const cls = (el.className || '').toString().toLowerCase(); const elemId = (el.id || '').toString().toLowerCase();
+          const txt = (el.innerText || el.textContent || '').trim().toUpperCase(); const isDpad = cls.includes('dpad') || elemId.includes('dpad') || cls.includes('direction') || cls.includes('joystick') || cls.includes('up') || cls.includes('down') || cls.includes('left') || cls.includes('right');
           if (cls.includes('button-a') || elemId.includes('button-a') || txt === 'A') styleBtn(el, 'rgba(230, 57, 70, 0.88)', '2px solid #9e1c11', '#ffffff');
           else if (cls.includes('button-b') || elemId.includes('button-b') || txt === 'B') styleBtn(el, 'rgba(255, 183, 3, 0.88)', '2px solid #b28300', '#ffffff');
           else if (cls.includes('button-x') || elemId.includes('button-x') || txt === 'X') styleBtn(el, 'rgba(29, 112, 184, 0.88)', '2px solid #144b7d', '#ffffff');
@@ -454,15 +417,9 @@
       });
       observer.observe(document.body, { childList: true, subtree: true });
 
-      const s = document.createElement('script');
-      s.src = 'https://cdn.emulatorjs.org/stable/data/loader.js';
-      s.onload = () => { 
-        document.getElementById('msg').style.display = 'none'; 
-        showToast("👆 Toca '⛶ Pantalla' arriba a la derecha para iniciar", 5000);
-      };
-      document.body.appendChild(s);
-      
-      initDB();
+      const s = document.createElement('script'); s.src = 'https://cdn.emulatorjs.org/stable/data/loader.js';
+      s.onload = () => { document.getElementById('msg').style.display = 'none'; showToast("👆 Toca '⛶ Pantalla' arriba a la derecha para iniciar", 5000); };
+      document.body.appendChild(s); initDB();
     }
 
     let savesDB;
@@ -475,10 +432,8 @@
     async function quickSave() {
       if (window.EJS_emulator && window.EJS_emulator.gameManager && savesDB) {
         try {
-          const state = await window.EJS_emulator.gameManager.getState();
-          savesDB.transaction("states", "readwrite").objectStore("states").put(state, gameId);
-          showToast("💾 Partida Guardada", 2000);
-          if (navigator.vibrate) navigator.vibrate(30);
+          const state = await window.EJS_emulator.gameManager.getState(); savesDB.transaction("states", "readwrite").objectStore("states").put(state, gameId);
+          showToast("💾 Partida Guardada", 2000); if (navigator.vibrate) navigator.vibrate(30);
         } catch (e) { showToast("❌ Error al guardar", 2000); }
       }
     }
