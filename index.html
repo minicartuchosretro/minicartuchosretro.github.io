@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>Mini Retro Cartuchos</title>
   <link rel="manifest" href="./manifest.json">
-  <meta name="theme-color" content="#000000">
+  <meta name="theme-color" content="#0b0b0b">
 
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -18,7 +18,7 @@
     .view-container { display: none; width: 100%; height: 100%; overflow-y: auto; padding-bottom: 40px; }
     .active-view { display: block; }
     
-    /* LOGO CON DETECCIÓN DE TOQUES (EASTER EGG) */
+    /* LOGO INTERACTIVO */
     .brand-logo { 
       display: block; 
       margin: 16px auto; 
@@ -51,29 +51,57 @@
     }
     .btn-install:active { transform: scale(0.98); }
 
-    /* SECCIONES DEL HUB */
+    /* --- NUEVO SISTEMA DE PESTAÑAS (TABS) --- */
     #hub-view { padding: 15px; }
-    .section-title {
-      font-size: 1.05rem;
-      font-weight: 800;
-      text-transform: uppercase;
-      letter-spacing: 1.5px;
-      margin: 22px 0 10px 0;
+    .tabs-container {
       display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-    .title-unlocked { color: #4ade80; }
-    .title-locked { color: #9ca3af; }
-    .title-vault { color: #fbbf24; text-shadow: 0 0 10px rgba(251, 191, 36, 0.3); }
-
-    .games-list {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
+      background: #18181b;
+      border-radius: 14px;
+      padding: 6px;
+      margin: 0 auto 20px auto;
       max-width: 500px;
-      margin: 0 auto;
+      border: 1px solid #27272a;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.4);
     }
+
+    .tab {
+      flex: 1;
+      text-align: center;
+      padding: 10px 5px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: #a1a1aa;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    /* Estados Activos de las Pestañas */
+    .tab.active {
+      background: #27272a;
+      color: #fff;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    }
+    
+    #tab-unlocked.active { color: #4ade80; }
+    
+    #tab-vault.active {
+      background: linear-gradient(135deg, #d97706, #b45309);
+      color: #fff;
+      box-shadow: 0 4px 12px rgba(217, 119, 6, 0.4);
+    }
+
+    .tab-content { display: none; animation: fadeIn 0.25s ease-out forwards; }
+    .active-tab-content { display: block; }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .games-list { display: flex; flex-direction: column; gap: 12px; max-width: 500px; margin: 0 auto; }
 
     /* TARJETAS DE CADA JUEGO */
     .game-card {
@@ -84,7 +112,7 @@
       border-radius: 12px;
       padding: 10px 14px;
       gap: 14px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+      box-shadow: 0 4px 10px rgba(0,0,0,0.3);
       cursor: pointer;
       transition: transform 0.15s, background 0.15s;
     }
@@ -99,35 +127,13 @@
       border: 1px solid #3f3f46;
     }
 
-    .card-details {
-      display: flex;
-      flex-direction: column;
-      flex-grow: 1;
-      text-align: left;
-    }
-
-    .card-name {
-      font-size: 1.02rem;
-      font-weight: bold;
-      color: #fafafa;
-      margin-bottom: 3px;
-    }
-
-    .card-subtext {
-      font-size: 0.8rem;
-      color: #a1a1aa;
-    }
+    .card-details { display: flex; flex-direction: column; flex-grow: 1; text-align: left; }
+    .card-name { font-size: 1.02rem; font-weight: bold; color: #fafafa; margin-bottom: 3px; }
+    .card-subtext { font-size: 0.8rem; color: #a1a1aa; }
 
     /* TARJETA BLOQUEADA */
-    .card-locked {
-      background: #121214;
-      border-color: #202024;
-      opacity: 0.7;
-    }
-    .card-locked .card-thumb {
-      filter: grayscale(100%) brightness(0.4);
-      border-color: #27272a;
-    }
+    .card-locked { background: #121214; border-color: #202024; opacity: 0.7; }
+    .card-locked .card-thumb { filter: grayscale(100%) brightness(0.4); border-color: #27272a; }
     .card-locked .card-name { color: #71717a; }
     .card-locked .card-subtext { color: #52525b; }
 
@@ -137,18 +143,12 @@
       border: 1px solid #d97706;
       box-shadow: 0 4px 14px rgba(217, 119, 6, 0.25);
     }
-    .card-vault .card-thumb {
-      border: 1.5px solid #fbbf24;
-    }
-    .card-vault .card-name {
-      color: #fef08a;
-    }
+    .card-vault .card-thumb { border: 1.5px solid #fbbf24; }
+    .card-vault .card-name { color: #fef08a; }
 
     .empty-message {
-      font-size: 0.85rem;
-      color: #52525b;
-      font-style: italic;
-      padding: 8px 4px;
+      font-size: 0.9rem; color: #52525b; text-align: center; font-style: italic;
+      padding: 30px 10px; background: #121214; border-radius: 12px; border: 1px dashed #27272a;
     }
 
     /* VISTA DETALLES / INFO */
@@ -185,24 +185,24 @@
       📲 Instalar Aplicación
     </button>
 
+    <!-- MENÚ DE PESTAÑAS -->
+    <div class="tabs-container">
+      <div class="tab active" id="tab-unlocked" onclick="switchTab('unlocked')">🎮 Míos (<span id="count-unlocked">0</span>)</div>
+      <div class="tab" id="tab-locked" onclick="switchTab('locked')">🔒 Faltan (<span id="count-locked">0</span>)</div>
+      <div class="tab" id="tab-vault" onclick="switchTab('vault')" style="display: none;">✨ Bóveda (<span id="count-vault">0</span>)</div>
+    </div>
+
+    <!-- CONTENIDO DE LAS PESTAÑAS -->
     <div style="max-width: 500px; margin: 0 auto;">
-      <!-- LISTA 1: DISPONIBLES -->
-      <div class="section-title title-unlocked">
-        <span>🎮</span> Disponibles (<span id="count-unlocked">0</span>)
+      <div id="view-unlocked" class="tab-content active-tab-content">
+        <div class="games-list" id="unlocked-list"></div>
       </div>
-      <div class="games-list" id="unlocked-list"></div>
-
-      <!-- LISTA 2: BLOQUEADOS -->
-      <div class="section-title title-locked">
-        <span>🔒</span> Bloqueados (<span id="count-locked">0</span>)
+      
+      <div id="view-locked" class="tab-content">
+        <div class="games-list" id="locked-list"></div>
       </div>
-      <div class="games-list" id="locked-list"></div>
-
-      <!-- LISTA 3: BÓVEDA SECRETA (EASTER EGGS) -->
-      <div id="vault-section" style="display: none;">
-        <div class="section-title title-vault">
-          <span>✨</span> Bóveda Secreta (<span id="count-vault">0</span>)
-        </div>
+      
+      <div id="view-vault" class="tab-content">
         <div class="games-list" id="vault-list"></div>
       </div>
     </div>
@@ -281,7 +281,6 @@
       }
     }
 
-    // COMPROBACIÓN DE RECOMPENSAS POR COMPLETAR COLECCIÓN
     checkCollectionRewards();
 
     function checkCollectionRewards() {
@@ -325,12 +324,23 @@
       initEmulator();
     }
 
-    // --- RENDERIZADO DEL CATÁLOGO (CON SOPORTE PARA BÓVEDA SECRETA) ---
+    // --- LÓGICA DE LAS PESTAÑAS ---
+    function switchTab(tabId) {
+      // Quitar clase activa de todas las pestañas y vistas
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active-tab-content'));
+      
+      // Activar la seleccionada
+      document.getElementById(`tab-${tabId}`).classList.add('active');
+      document.getElementById(`view-${tabId}`).classList.add('active-tab-content');
+    }
+
+    // --- RENDERIZADO DEL CATÁLOGO ---
     function renderHub() {
       const unlockedContainer = document.getElementById('unlocked-list');
       const lockedContainer = document.getElementById('locked-list');
       const vaultContainer = document.getElementById('vault-list');
-      const vaultSection = document.getElementById('vault-section');
+      const vaultTab = document.getElementById('tab-vault');
       
       unlockedContainer.innerHTML = '';
       lockedContainer.innerHTML = '';
@@ -344,7 +354,6 @@
         const game = GAMES[key];
         const isUnlocked = unlockedGames.includes(key);
 
-        // Si es secreto (hidden)
         if (game.hidden) {
           if (isUnlocked) {
             vCount++;
@@ -361,10 +370,9 @@
             `;
             vaultContainer.appendChild(card);
           }
-          return; // No aparece en la lista de bloqueados
+          return; 
         }
 
-        // Catálogo regular
         const card = document.createElement('div');
         if (isUnlocked) {
           uCount++;
@@ -395,21 +403,24 @@
         }
       });
 
+      // Actualizar contadores en las pestañas
       document.getElementById('count-unlocked').innerText = uCount;
       document.getElementById('count-locked').innerText = lCount;
       document.getElementById('count-vault').innerText = vCount;
 
-      vaultSection.style.display = vCount > 0 ? 'block' : 'none';
+      // Mostrar/Ocultar Pestaña de Bóveda
+      vaultTab.style.display = vCount > 0 ? 'block' : 'none';
 
+      // Mensajes de listas vacías
       if (uCount === 0) {
-        unlockedContainer.innerHTML = '<div class="empty-message">No tienes cartuchos desbloqueados aún. ¡Acerca uno con NFC!</div>';
+        unlockedContainer.innerHTML = '<div class="empty-message">No tienes cartuchos desbloqueados aún.<br><br>¡Acerca uno a tu teléfono para empezar!</div>';
       }
       if (lCount === 0) {
-        lockedContainer.innerHTML = '<div class="empty-message">¡Felicidades! Tienes todos los cartuchos desbloqueados.</div>';
+        lockedContainer.innerHTML = '<div class="empty-message">¡Felicidades! Tienes todos los cartuchos del catálogo desbloqueados.</div>';
       }
     }
 
-    // --- EASTER EGG: 5 TOQUES EN EL LOGO ---
+    // --- EASTER EGG: TOQUES EN EL LOGO ---
     let logoClicks = 0;
     let clickTimer = null;
     const logoEl = document.getElementById('secret-logo');
@@ -418,7 +429,6 @@
       logoEl.addEventListener('click', () => {
         logoClicks++;
         clearTimeout(clickTimer);
-        
         clickTimer = setTimeout(() => { logoClicks = 0; }, 2500);
 
         if (logoClicks >= 5) {
@@ -508,7 +518,7 @@
       initDB();
     }
 
-    // --- GUARDADO LOCAL EN NAVEGADOR (IndexedDB) ---
+    // --- GUARDADO LOCAL EN NAVEGADOR ---
     let savesDB;
     function initDB() {
       const dbReq = indexedDB.open("RetroC_SavesDB", 1);
