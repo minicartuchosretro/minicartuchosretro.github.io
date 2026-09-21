@@ -1,9 +1,10 @@
-const CACHE_NAME = 'retroc-v2';
+const CACHE_NAME = 'retroc-v3';
 const ASSETS = [
   './',
   './index.html',
   './games.js',
   './frases.js',
+  './pistas.js',
   './logo.png',
   './icon.png',
   './manifest.json'
@@ -35,7 +36,7 @@ self.addEventListener('fetch', (e) => {
     caches.match(e.request).then((response) => {
       return response || fetch(e.request);
     }).catch(() => {
-      // Si falla la red y no está en caché
+      // Manejo offline silencioso
     })
   );
 });
