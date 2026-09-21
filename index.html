@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>Mini Retro Cartuchos</title>
+  <link rel="manifest" href="./manifest.json">
+  <meta name="theme-color" content="#000000">
+
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body {
+      width: 100vw; height: 100dvh; background: #0b0b0b;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      overflow: hidden; color: #fff;
+    }
+    
+    /* CONTENEDOR GENERAL */
+    .view-container { display: none; width: 100%; height: 100%; overflow-y: auto; padding-bottom: 40px; }
+    .active-view { display: block; }
+    .brand-logo { display: block; margin: 16px auto; max-width: 180px; }
+
+    /* BOTÓN INSTALAR PWA */
+    .btn-install {
+      background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+      color: #fff;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 25px;
+      padding: 12px 20px;
+      font-size: 0.95rem;
+      font-weight: bold;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      margin: 10px auto 20px auto;
+      max-width: 320px;
+      width: 100%;
+      box-shadow: 0 4px 12px rgba(59, 130, 246, 0.35);
+    }
+    .btn-install:active { transform: scale(0.98); }
+
+    /* --- VISTA HUB (DOS LISTAS VERTICALES) --- */
+    #hub-view { padding: 15px; }
+    .section-title {
+      font-size: 1.1rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      margin: 20px 0 10px 0;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .title-unlocked { color: #4ade80; }
+    .title-locked { color: #9ca3af; }
+
+    .games-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      max-width: 500px;
+      margin: 0 auto;
+    }
+
+    /* TARJETAS DE CADA JUEGO */
+    .game-card {
+      display: flex;
+      align-items: center;
+      background: #18181b;
+      border: 1px solid #27272a;
+      border-radius: 12px;
+      padding: 10px 14px;
+      gap: 14px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+      cursor: pointer;
+      transition: transform 0.15s, background 0.15s;
+    }
+    .game-card:active { transform: scale(0.98); }
+
+    .card-thumb {
+      width: 58px;
+      height: 58px;
+      border-radius: 8px;
+      object-fit: cover;
+      flex-shrink: 0;
+      border: 1px solid #3f3f46;
+    }
+
+    .card-details {
+      display: flex;
+      flex-direction: column;
+      flex-grow: 1;
+      text-align: left;
+    }
+
+    .card-name {
+      font-size: 1.05rem;
+      font-weight: bold;
+      color: #fafafa;
+      margin-bottom: 3px;
+    }
+
+    .card-subtext {
+      font-size: 0.8rem;
+      color: #a1a1aa;
+    }
+
+    /* ESTILO BLOQUEADO */
+    .card-locked {
+      background: #121214;
+      border-color: #202024;
+      opacity: 0.7;
+    }
+    .card-locked .card-thumb {
+      filter: grayscale(100%) brightness(0.4);
+      border-color: #27272a;
+    }
+    .card-locked .card-name {
+      color: #71717a;
+    }
+    .card-locked .card-subtext {
+      color: #52525b;
+    }
+
+    .empty-message {
+      font-size: 0.85rem;
+      color: #52525b;
+      font-style: italic;
+      padding: 8px 4px;
+    }
+
+    /* --- VISTA INFO --- */
+    #info-view { padding: 30px 20px; text-align: center; display: flex; flex-direction: column; align-items: center; }
+    #info-cover { width: 170px; height: 170px; object-fit: cover; border-radius: 16px; border: 3px solid #3f3f46; box-shadow: 0 8px 16px rgba(0,0,0,0.8); margin-bottom: 20px; }
+    #info-title { font-size: 1.6rem; font-weight: bold; margin-bottom: 12px; }
+    #info-desc { font-size: 0.95rem; color: #a1a1aa; line-height: 1.5; margin-bottom: 25px; max-width: 400px; }
+    
+    .btn {
+      padding: 14px 20px; font-size: 1rem; font-weight: bold; border-radius: 25px; border: none;
+      cursor: pointer; width: 100%; max-width: 320px; margin-bottom: 12px; display: flex; align-items: center; justify-content: center; gap: 8px;
+    }
+    .btn-play { background: #e63946; color: #fff; box-shadow: 0 4px 12px rgba(230,57,70,0.3); }
+    .btn-home { background: #27272a; color: #fff; border: 1px solid #3f3f46; }
+
+    /* --- VISTA EMULADOR --- */
+    #emulator-view { position: relative; width: 100%; height: 100%; background: #000; overflow: hidden; }
+    #display { width: 100vw; height: calc(100dvh - 45px); position: absolute; top: 45px; left: 0; z-index: 1; }
+    #emu-watermark { position: fixed; top: 4px; left: 12px; z-index: 9999999; max-width: 150px; max-height: 36px; object-fit: contain; }
+    #top-controls { position: fixed; top: 8px; right: 12px; z-index: 9999999; display: flex; gap: 6px; }
+    #top-controls button { background: rgba(20,20,20,0.85); color: #fff; border: 1px solid rgba(255,255,255,0.3); border-radius: 20px; padding: 6px 12px; font-size: 13px; font-weight: bold; cursor: pointer; }
+    #msg { color: #fff; height: 100dvh; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 1.1rem; }
+  </style>
+</head>
+<body>
+
+  <script src="./games.js"></script>
+
+  <!-- ==================== VISTA 1: LISTAS VERTICALES ==================== -->
+  <div id="hub-view" class="view-container">
+    <img src="./logo.png" alt="Logo" class="brand-logo">
+    
+    <!-- BOTÓN DE INSTALACIÓN -->
+    <button id="pwa-install-btn" class="btn-install" onclick="triggerPwaInstall()">
+      📲 Instalar Aplicación
+    </button>
+
+    <div style="max-width: 500px; margin: 0 auto;">
+      <!-- LISTA 1: DESBLOQUEADOS -->
+      <div class="section-title title-unlocked">
+        <span>🎮</span> Disponibles para jugar (<span id="count-unlocked">0</span>)
+      </div>
+      <div class="games-list" id="unlocked-list"></div>
+
+      <!-- LISTA 2: BLOQUEADOS -->
+      <div class="section-title title-locked">
+        <span>🔒</span> Bloqueados (<span id="count-locked">0</span>)
+      </div>
+      <div class="games-list" id="locked-list"></div>
+    </div>
+  </div>
+
+  <!-- ==================== VISTA 2: INFO ==================== -->
+  <div id="info-view" class="view-container">
+    <img src="./logo.png" alt="Logo" class="brand-logo" style="max-width: 130px; margin: 10px auto 16px;">
+    <img id="info-cover" src="" alt="Cover">
+    <h1 id="info-title">Título</h1>
+    <p id="info-desc">Descripción...</p>
+    
+    <button class="btn btn-play" onclick="startGame()">🕹️ Jugar Ahora</button>
+    <button class="btn btn-home" onclick="goHome()">🏠 Volver al Menú</button>
+  </div>
+
+  <!-- ==================== VISTA 3: EMULADOR ==================== -->
+  <div id="emulator-view" class="view-container">
+    <img id="emu-watermark" src="./logo.png" alt="Logo">
+    <div id="top-controls">
+      <button onclick="goHome()" style="background:#e63946;">✕ Salir</button>
+      <button onclick="quickSave()">💾 Guardar</button>
+      <button onclick="quickLoad()">📂 Cargar</button>
+      <button onclick="toggleFullScreen()" id="fs-btn">⛶ Pantalla</button>
+    </div>
+    <div id="msg">Iniciando cartucho...</div>
+    <div id="display"></div>
+  </div>
+
+  <script>
+    if ('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js');
+
+    const params = new URLSearchParams(window.location.search);
+    const gameId = params.get("game");
+    const isPlaying = params.get("play") === "true";
+
+    // --- CONTROL DEL BOTÓN DE INSTALACIÓN PROPIO ---
+    let deferredPrompt = null;
+    const installBtn = document.getElementById('pwa-install-btn');
+
+    // Si ya se está ejecutando como app instalada (standalone), ocultar el botón
+    if (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true) {
+      if (installBtn) installBtn.style.display = 'none';
+    }
+
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+      if (installBtn && !gameId) {
+        installBtn.style.display = 'flex';
+      }
+    });
+
+    async function triggerPwaInstall() {
+      if (deferredPrompt) {
+        deferredPrompt.prompt();
+        const { outcome } = await deferredPrompt.userChoice;
+        if (outcome === 'accepted') {
+          if (installBtn) installBtn.style.display = 'none';
+        }
+        deferredPrompt = null;
+      } else {
+        showToast("ℹ️ Toca los tres puntos (⋮) de tu navegador y selecciona 'Instalar aplicación'", 4500);
+      }
+    }
+
+    window.addEventListener('appinstalled', () => {
+      if (installBtn) installBtn.style.display = 'none';
+      deferredPrompt = null;
+      showToast("✅ ¡Mini Retro Cartuchos instalada con éxito!", 3000);
+    });
+
+    // SISTEMA DE DESBLOQUEO LOCAL
+    let unlockedGames = JSON.parse(localStorage.getItem('retroc_unlocked') || '[]');
+
+    if (gameId && GAMES[gameId] && !unlockedGames.includes(gameId)) {
+      unlockedGames.push(gameId);
+      localStorage.setItem('retroc_unlocked', JSON.stringify(unlockedGames));
+    }
+
+    // NAVEGACIÓN ENTRE VISTAS
+    if (!gameId) {
+      document.getElementById('hub-view').classList.add('active-view');
+      renderHub();
+    } else if (gameId && !isPlaying) {
+      document.getElementById('info-view').classList.add('active-view');
+      renderInfo();
+    } else if (gameId && isPlaying) {
+      document.getElementById('emulator-view').classList.add('active-view');
+      initEmulator();
+    }
+
+    // RENDERIZADO DEL MENÚ (Ignora juegos con hidden: true)
+    function renderHub() {
+      const unlockedContainer = document.getElementById('unlocked-list');
+      const lockedContainer = document.getElementById('locked-list');
+      
+      unlockedContainer.innerHTML = '';
+      lockedContainer.innerHTML = '';
+
+      let uCount = 0;
+      let lCount = 0;
+
+      Object.keys(GAMES).forEach(key => {
+        const game = GAMES[key];
+        if (game.hidden) return; // Omite juegos secretos como DOOM
+
+        const isUnlocked = unlockedGames.includes(key);
+        const card = document.createElement('div');
+
+        if (isUnlocked) {
+          uCount++;
+          card.className = 'game-card';
+          card.onclick = () => window.location.href = `?game=${key}`;
+          card.innerHTML = `
+            <img class="card-thumb" src="${game.icon}" alt="${game.title}">
+            <div class="card-details">
+              <span class="card-name">${game.title}</span>
+              <span class="card-subtext">Toca para ver detalles</span>
+            </div>
+            <span style="color:#4ade80; font-size:1.2rem;">▶</span>
+          `;
+          unlockedContainer.appendChild(card);
+        } else {
+          lCount++;
+          card.className = 'game-card card-locked';
+          card.onclick = () => showToast("🔒 Escanea el cartucho NFC físico para desbloquear", 3000);
+          card.innerHTML = `
+            <img class="card-thumb" src="${game.icon}" alt="${game.title}">
+            <div class="card-details">
+              <span class="card-name">${game.title}</span>
+              <span class="card-subtext">Bloqueado • Requiere tarjeta NFC</span>
+            </div>
+            <span style="color:#52525b; font-size:1.1rem;">🔒</span>
+          `;
+          lockedContainer.appendChild(card);
+        }
+      });
+
+      document.getElementById('count-unlocked').innerText = uCount;
+      document.getElementById('count-locked').innerText = lCount;
+
+      if (uCount === 0) {
+        unlockedContainer.innerHTML = '<div class="empty-message">No tienes cartuchos desbloqueados aún. ¡Acerca uno con NFC!</div>';
+      }
+      if (lCount === 0) {
+        lockedContainer.innerHTML = '<div class="empty-message">¡Felicidades! Tienes todos los cartuchos desbloqueados.</div>';
+      }
+    }
+
+    function renderInfo() {
+      const game = GAMES[gameId];
+      if(!game) { goHome(); return; }
+      document.getElementById('info-cover').src = game.icon;
+      document.getElementById('info-title').innerText = game.title;
+      document.getElementById('info-desc').innerText = game.desc;
+    }
+
+    function startGame() { window.location.href = `?game=${gameId}&play=true`; }
+    function goHome() { window.location.href = `./`; }
+
+    function showToast(text, duration) {
+      let t = document.createElement('div');
+      t.innerText = text;
+      t.style.cssText = "position:fixed; top:70px; left:50%; transform:translateX(-50%); background:rgba(15,15,18,0.95); color:#fff; padding:12px 20px; border-radius:24px; z-index:9999999; font-weight:bold; font-size:13.5px; text-align:center; box-shadow:0 4px 12px rgba(0,0,0,0.6); border:1px solid rgba(255,255,255,0.15); transition:opacity 0.3s; width:85%; max-width:350px;";
+      document.body.appendChild(t);
+      setTimeout(() => { t.style.opacity = '0'; setTimeout(() => t.remove(), 300); }, duration);
+    }
+
+    // INICIALIZACIÓN DEL EMULADOR
+    function initEmulator() {
+      const selected = GAMES[gameId];
+      if (!selected) { document.getElementById("msg").innerHTML = "Error al cargar"; return; }
+
+      window.EJS_player = '#display';
+      window.EJS_core = selected.system;
+      window.EJS_gameUrl = selected.rom;
+      window.EJS_gameName = selected.title;
+      window.EJS_startOnLoaded = true;
+      window.EJS_pathtodata = 'https://cdn.emulatorjs.org/stable/data/';
+
+      document.addEventListener('touchstart', function(e) {
+        let target = e.target;
+        while (target && target !== document.body) {
+          const cls = (target.className || '').toString().toLowerCase();
+          const elemId = (target.id || '').toString().toLowerCase();
+          if (cls.includes('button') || cls.includes('dpad') || cls.includes('direction') || cls.includes('up') || cls.includes('down') || cls.includes('left') || cls.includes('right') || elemId.includes('button') || elemId.includes('dpad')) {
+            if (navigator.vibrate) navigator.vibrate(15);
+            break;
+          }
+          target = target.parentNode;
+        }
+      }, { passive: true });
+
+      function styleBtn(el, bg, border, textColor = '#ffffff') {
+        el.style.setProperty('background', bg, 'important');
+        el.style.setProperty('border', border, 'important');
+        el.style.setProperty('color', textColor, 'important');
+        el.style.setProperty('text-shadow', '0 1px 2px rgba(0,0,0,0.8)', 'important');
+        el.querySelectorAll('*').forEach(child => { child.style.setProperty('color', textColor, 'important'); child.style.setProperty('fill', textColor, 'important'); });
+      }
+
+      const observer = new MutationObserver(() => {
+        document.querySelectorAll('div, button, span').forEach(el => {
+          const cls = (el.className || '').toString().toLowerCase();
+          const elemId = (el.id || '').toString().toLowerCase();
+          const txt = (el.innerText || el.textContent || '').trim().toUpperCase();
+          const isDpad = cls.includes('dpad') || elemId.includes('dpad') || cls.includes('direction') || cls.includes('joystick') || cls.includes('up') || cls.includes('down') || cls.includes('left') || cls.includes('right');
+
+          if (cls.includes('button-a') || elemId.includes('button-a') || txt === 'A') styleBtn(el, 'rgba(230, 57, 70, 0.88)', '2px solid #9e1c11', '#ffffff');
+          else if (cls.includes('button-b') || elemId.includes('button-b') || txt === 'B') styleBtn(el, 'rgba(255, 183, 3, 0.88)', '2px solid #b28300', '#ffffff');
+          else if (cls.includes('button-x') || elemId.includes('button-x') || txt === 'X') styleBtn(el, 'rgba(29, 112, 184, 0.88)', '2px solid #144b7d', '#ffffff');
+          else if (cls.includes('button-y') || elemId.includes('button-y') || txt === 'Y') styleBtn(el, 'rgba(42, 157, 143, 0.88)', '2px solid #1c6b60', '#ffffff');
+          else if (!isDpad && (cls.includes('button-l') || txt === 'L' || txt === 'L1' || cls.includes('button-r') || txt === 'R' || txt === 'R1')) styleBtn(el, 'rgba(153, 153, 161, 0.85)', '2px solid #777780', '#ffffff');
+        });
+      });
+      observer.observe(document.body, { childList: true, subtree: true });
+
+      const s = document.createElement('script');
+      s.src = 'https://cdn.emulatorjs.org/stable/data/loader.js';
+      s.onload = () => { 
+        document.getElementById('msg').style.display = 'none'; 
+        showToast("👆 Toca '⛶ Pantalla' arriba a la derecha para iniciar", 5000);
+      };
+      document.body.appendChild(s);
+      
+      initDB();
+    }
+
+    // GUARDADO Y CARGA LOCAL (IndexedDB)
+    let savesDB;
+    function initDB() {
+      const dbReq = indexedDB.open("RetroC_SavesDB", 1);
+      dbReq.onupgradeneeded = e => { if (!e.target.result.objectStoreNames.contains("states")) e.target.result.createObjectStore("states"); };
+      dbReq.onsuccess = e => { savesDB = e.target.result; };
+    }
+
+    async function quickSave() {
+      if (window.EJS_emulator && window.EJS_emulator.gameManager && savesDB) {
+        try {
+          const state = await window.EJS_emulator.gameManager.getState();
+          savesDB.transaction("states", "readwrite").objectStore("states").put(state, gameId);
+          showToast("💾 Partida Guardada", 2000);
+          if (navigator.vibrate) navigator.vibrate(30);
+        } catch (e) { showToast("❌ Error al guardar", 2000); }
+      }
+    }
+
+    async function quickLoad() {
+      if (window.EJS_emulator && window.EJS_emulator.gameManager && savesDB) {
+        try {
+          savesDB.transaction("states", "readonly").objectStore("states").get(gameId).onsuccess = async e => {
+            if (e.target.result) { await window.EJS_emulator.gameManager.loadState(e.target.result); showToast("📂 Partida Cargada", 2000); if (navigator.vibrate) navigator.vibrate(30); }
+            else showToast("❌ No hay partida guardada", 2000);
+          };
+        } catch (e) { showToast("❌ Error al cargar", 2000); }
+      }
+    }
+
+    function toggleFullScreen() {
+      const elem = document.documentElement; const btn = document.getElementById('fs-btn');
+      if (!document.fullscreenElement && !document.webkitFullscreenElement) {
+        if (elem.requestFullscreen) elem.requestFullscreen(); else if (elem.webkitRequestFullscreen) elem.webkitRequestFullscreen();
+        btn.innerText = '✕ Salir FC';
+      } else {
+        if (document.exitFullscreen) document.exitFullscreen(); else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
+        btn.innerText = '⛶ Pantalla';
+      }
+    }
+  </script>
+</body>
+</html>
