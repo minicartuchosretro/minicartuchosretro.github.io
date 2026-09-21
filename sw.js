@@ -1,8 +1,9 @@
-const CACHE_NAME = 'retroc-v1';
+const CACHE_NAME = 'retroc-v2';
 const ASSETS = [
   './',
   './index.html',
   './games.js',
+  './frases.js',
   './logo.png',
   './icon.png',
   './manifest.json'
@@ -18,7 +19,15 @@ self.addEventListener('install', (e) => {
 });
 
 self.addEventListener('activate', (e) => {
-  e.waitUntil(self.clients.claim());
+  e.waitUntil(
+    caches.keys().then((keyList) => {
+      return Promise.all(keyList.map((key) => {
+        if (key !== CACHE_NAME) {
+          return caches.delete(key);
+        }
+      }));
+    }).then(() => self.clients.claim())
+  );
 });
 
 self.addEventListener('fetch', (e) => {
@@ -26,7 +35,7 @@ self.addEventListener('fetch', (e) => {
     caches.match(e.request).then((response) => {
       return response || fetch(e.request);
     }).catch(() => {
-      // Si falla la red y no está en caché, no hace nada fatal
+      // Si falla la red y no está en caché
     })
   );
 });
