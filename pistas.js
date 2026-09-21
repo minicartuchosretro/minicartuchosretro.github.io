@@ -1,0 +1,22 @@
+const PISTAS_SECRETAS = [
+  "🕵️ Pista: Existe un cartucho que no aparece en el catálogo. Su etiqueta es diferente...",
+  "🕵️ Pista: La Bóveda Secreta solo se revela ante el portador de una tarjeta muy especial.",
+  "🕵️ Pista: Dicen que la comunidad de fans creó secuelas que nunca llegaron a las tiendas oficiales.",
+  "🕵️ Pista: No todos los juegos están a la vista. Algunos requieren explorar más allá del menú.",
+  "🕵️ Pista: Escanea el cartucho misterioso para despertar la sección dorada de tu colección.",
+  "🕵️ Pista: Hay un ROM Hack legendario esperando a ser descubierto en las sombras.",
+  "🕵️ Pista: Algunos juegos fueron alterados, mejorados y ocultados. Encuentra el chip correcto.",
+  "🕵️ Pista: Los verdaderos clásicos a veces no tienen licencia oficial. Atrévete a escanearlo.",
+  "🕵️ Pista: Un portal a una aventura inédita se abrirá si usas la etiqueta NFC indicada.",
+  "🕵️ Pista: Rumor: Existe una edición de coleccionista que no se puede ver a simple vista.",
+  "🕵️ Pista: Si ves píxeles que desafían la historia oficial del juego, vas por el buen camino...",
+  "🕵️ Pista: Tu colección no estará verdaderamente completa hasta que encuentres el título oculto.",
+  "🕵️ Pista: En los 90s, algunos cartuchos solo se compartían en secreto. Nosotros rescatamos uno.",
+  "🕵️ Pista: Un Easter Egg físico desbloquea la mayor rareza digital de esta consola.",
+  "🕵️ Pista: El Código Konami no te servirá aquí... necesitas tecnología NFC para este secreto.",
+  "🕵️ Pista: Busca la tarjeta especial, aquella modificada por verdaderos maestros del código.",
+  "🕵️ Pista: Hay un juego con la propiedad 'hidden: true' en nuestro sistema... ¿Podrás hallarlo?",
+  "🕵️ Pista: Los verdaderos coleccionistas saben que los mejores títulos a veces son clandestinos.",
+  "🕵️ Pista: Tienes el valor de completar colecciones, pero... ¿tienes el cartucho de la Bóveda?",
+  "🕵️ Pista: Una alteración en la Matrix del emulador... Escanea el juego secreto para verla."
+];
