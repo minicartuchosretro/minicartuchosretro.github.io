@@ -51,7 +51,7 @@
     }
     .btn-install:active { transform: scale(0.98); }
 
-    /* --- NUEVO SISTEMA DE PESTAÑAS (TABS) --- */
+    /* PESTAÑAS (TABS) */
     #hub-view { padding: 15px; }
     .tabs-container {
       display: flex;
@@ -78,15 +78,8 @@
       -webkit-tap-highlight-color: transparent;
     }
 
-    /* Estados Activos de las Pestañas */
-    .tab.active {
-      background: #27272a;
-      color: #fff;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.3);
-    }
-    
+    .tab.active { background: #27272a; color: #fff; box-shadow: 0 2px 8px rgba(0,0,0,0.3); }
     #tab-unlocked.active { color: #4ade80; }
-    
     #tab-vault.active {
       background: linear-gradient(135deg, #d97706, #b45309);
       color: #fff;
@@ -103,7 +96,7 @@
 
     .games-list { display: flex; flex-direction: column; gap: 12px; max-width: 500px; margin: 0 auto; }
 
-    /* TARJETAS DE CADA JUEGO */
+    /* TARJETAS */
     .game-card {
       display: flex;
       align-items: center;
@@ -118,26 +111,16 @@
     }
     .game-card:active { transform: scale(0.98); }
 
-    .card-thumb {
-      width: 58px;
-      height: 58px;
-      border-radius: 8px;
-      object-fit: cover;
-      flex-shrink: 0;
-      border: 1px solid #3f3f46;
-    }
-
+    .card-thumb { width: 58px; height: 58px; border-radius: 8px; object-fit: cover; flex-shrink: 0; border: 1px solid #3f3f46; }
     .card-details { display: flex; flex-direction: column; flex-grow: 1; text-align: left; }
     .card-name { font-size: 1.02rem; font-weight: bold; color: #fafafa; margin-bottom: 3px; }
     .card-subtext { font-size: 0.8rem; color: #a1a1aa; }
 
-    /* TARJETA BLOQUEADA */
     .card-locked { background: #121214; border-color: #202024; opacity: 0.7; }
     .card-locked .card-thumb { filter: grayscale(100%) brightness(0.4); border-color: #27272a; }
     .card-locked .card-name { color: #71717a; }
     .card-locked .card-subtext { color: #52525b; }
 
-    /* TARJETA DORADA DE LA BÓVEDA SECRETA */
     .card-vault {
       background: linear-gradient(135deg, #1c1917, #292524);
       border: 1px solid #d97706;
@@ -152,7 +135,9 @@
     }
 
     /* VISTA DETALLES / INFO */
-    #info-view { padding: 30px 20px; text-align: center; display: flex; flex-direction: column; align-items: center; }
+    #info-view { padding: 30px 20px; text-align: center; flex-direction: column; align-items: center; }
+    #info-view.active-view { display: flex; }
+    
     #info-cover { width: 170px; height: 170px; object-fit: cover; border-radius: 16px; border: 3px solid #3f3f46; box-shadow: 0 8px 16px rgba(0,0,0,0.8); margin-bottom: 20px; }
     #info-title { font-size: 1.6rem; font-weight: bold; margin-bottom: 12px; }
     #info-desc { font-size: 0.95rem; color: #a1a1aa; line-height: 1.5; margin-bottom: 25px; max-width: 400px; }
@@ -176,6 +161,7 @@
 <body>
 
   <script src="./games.js"></script>
+  <script src="./frases.js"></script>
 
   <!-- ==================== VISTA 1: HUB ==================== -->
   <div id="hub-view" class="view-container">
@@ -192,7 +178,6 @@
       <div class="tab" id="tab-vault" onclick="switchTab('vault')" style="display: none;">✨ Bóveda (<span id="count-vault">0</span>)</div>
     </div>
 
-    <!-- CONTENIDO DE LAS PESTAÑAS -->
     <div style="max-width: 500px; margin: 0 auto;">
       <div id="view-unlocked" class="tab-content active-tab-content">
         <div class="games-list" id="unlocked-list"></div>
@@ -270,15 +255,13 @@
       showToast("✅ ¡Mini Retro Cartuchos instalada con éxito!", 3000);
     });
 
-    // --- SISTEMA DE DESBLOQUEO LOCAL ---
+    // --- SISTEMA DE DESBLOQUEO ---
     let unlockedGames = JSON.parse(localStorage.getItem('retroc_unlocked') || '[]');
 
     if (gameId && GAMES[gameId] && !unlockedGames.includes(gameId)) {
       unlockedGames.push(gameId);
       localStorage.setItem('retroc_unlocked', JSON.stringify(unlockedGames));
-      if (GAMES[gameId].hidden && navigator.vibrate) {
-        navigator.vibrate([100, 50, 100]);
-      }
+      if (GAMES[gameId].hidden && navigator.vibrate) navigator.vibrate([100, 50, 100]);
     }
 
     checkCollectionRewards();
@@ -312,7 +295,7 @@
       });
     }
 
-    // --- ENRUTAMIENTO ENTRE VISTAS ---
+    // --- RUTAS ---
     if (!gameId) {
       document.getElementById('hub-view').classList.add('active-view');
       renderHub();
@@ -324,18 +307,13 @@
       initEmulator();
     }
 
-    // --- LÓGICA DE LAS PESTAÑAS ---
     function switchTab(tabId) {
-      // Quitar clase activa de todas las pestañas y vistas
       document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
       document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active-tab-content'));
-      
-      // Activar la seleccionada
       document.getElementById(`tab-${tabId}`).classList.add('active');
       document.getElementById(`view-${tabId}`).classList.add('active-tab-content');
     }
 
-    // --- RENDERIZADO DEL CATÁLOGO ---
     function renderHub() {
       const unlockedContainer = document.getElementById('unlocked-list');
       const lockedContainer = document.getElementById('locked-list');
@@ -346,9 +324,7 @@
       lockedContainer.innerHTML = '';
       vaultContainer.innerHTML = '';
 
-      let uCount = 0;
-      let lCount = 0;
-      let vCount = 0;
+      let uCount = 0; let lCount = 0; let vCount = 0;
 
       Object.keys(GAMES).forEach(key => {
         const game = GAMES[key];
@@ -360,14 +336,7 @@
             const card = document.createElement('div');
             card.className = 'game-card card-vault';
             card.onclick = () => window.location.href = `?game=${key}`;
-            card.innerHTML = `
-              <img class="card-thumb" src="${game.icon}" alt="${game.title}">
-              <div class="card-details">
-                <span class="card-name">${game.title}</span>
-                <span class="card-subtext">${game.reward ? '⭐ Recompensa de Colección' : '✨ Cartucho Secreto'}</span>
-              </div>
-              <span style="color:#fbbf24; font-size:1.2rem;">▶</span>
-            `;
+            card.innerHTML = `<img class="card-thumb" src="${game.icon}" alt="${game.title}"><div class="card-details"><span class="card-name">${game.title}</span><span class="card-subtext">${game.reward ? '⭐ Recompensa de Colección' : '✨ Cartucho Secreto'}</span></div><span style="color:#fbbf24; font-size:1.2rem;">▶</span>`;
             vaultContainer.appendChild(card);
           }
           return; 
@@ -378,49 +347,27 @@
           uCount++;
           card.className = 'game-card';
           card.onclick = () => window.location.href = `?game=${key}`;
-          card.innerHTML = `
-            <img class="card-thumb" src="${game.icon}" alt="${game.title}">
-            <div class="card-details">
-              <span class="card-name">${game.title}</span>
-              <span class="card-subtext">${game.collection ? game.collection : 'Toca para ver detalles'}</span>
-            </div>
-            <span style="color:#4ade80; font-size:1.2rem;">▶</span>
-          `;
+          card.innerHTML = `<img class="card-thumb" src="${game.icon}" alt="${game.title}"><div class="card-details"><span class="card-name">${game.title}</span><span class="card-subtext">${game.collection ? game.collection : 'Toca para ver detalles'}</span></div><span style="color:#4ade80; font-size:1.2rem;">▶</span>`;
           unlockedContainer.appendChild(card);
         } else {
           lCount++;
           card.className = 'game-card card-locked';
           card.onclick = () => showToast("🔒 Escanea el cartucho NFC físico para desbloquear", 3000);
-          card.innerHTML = `
-            <img class="card-thumb" src="${game.icon}" alt="${game.title}">
-            <div class="card-details">
-              <span class="card-name">${game.title}</span>
-              <span class="card-subtext">${game.collection ? game.collection + ' • ' : ''}Bloqueado</span>
-            </div>
-            <span style="color:#52525b; font-size:1.1rem;">🔒</span>
-          `;
+          card.innerHTML = `<img class="card-thumb" src="${game.icon}" alt="${game.title}"><div class="card-details"><span class="card-name">${game.title}</span><span class="card-subtext">${game.collection ? game.collection + ' • ' : ''}Bloqueado</span></div><span style="color:#52525b; font-size:1.1rem;">🔒</span>`;
           lockedContainer.appendChild(card);
         }
       });
 
-      // Actualizar contadores en las pestañas
       document.getElementById('count-unlocked').innerText = uCount;
       document.getElementById('count-locked').innerText = lCount;
       document.getElementById('count-vault').innerText = vCount;
 
-      // Mostrar/Ocultar Pestaña de Bóveda
       vaultTab.style.display = vCount > 0 ? 'block' : 'none';
 
-      // Mensajes de listas vacías
-      if (uCount === 0) {
-        unlockedContainer.innerHTML = '<div class="empty-message">No tienes cartuchos desbloqueados aún.<br><br>¡Acerca uno a tu teléfono para empezar!</div>';
-      }
-      if (lCount === 0) {
-        lockedContainer.innerHTML = '<div class="empty-message">¡Felicidades! Tienes todos los cartuchos del catálogo desbloqueados.</div>';
-      }
+      if (uCount === 0) unlockedContainer.innerHTML = '<div class="empty-message">No tienes cartuchos desbloqueados aún.<br><br>¡Acerca uno a tu teléfono para empezar!</div>';
+      if (lCount === 0) lockedContainer.innerHTML = '<div class="empty-message">¡Felicidades! Tienes todos los cartuchos del catálogo desbloqueados.</div>';
     }
 
-    // --- EASTER EGG: TOQUES EN EL LOGO ---
     let logoClicks = 0;
     let clickTimer = null;
     const logoEl = document.getElementById('secret-logo');
@@ -430,7 +377,6 @@
         logoClicks++;
         clearTimeout(clickTimer);
         clickTimer = setTimeout(() => { logoClicks = 0; }, 2500);
-
         if (logoClicks >= 5) {
           logoClicks = 0;
           if (navigator.vibrate) navigator.vibrate([80, 50, 80, 50, 150]);
@@ -458,10 +404,11 @@
       setTimeout(() => { t.style.opacity = '0'; setTimeout(() => t.remove(), 300); }, duration);
     }
 
-    // --- INICIALIZACIÓN DEL EMULADOR ---
     function initEmulator() {
       const selected = GAMES[gameId];
       if (!selected) { document.getElementById("msg").innerHTML = "Error al cargar"; return; }
+
+      document.getElementById("msg").innerText = FRASES_CARGA[Math.floor(Math.random() * FRASES_CARGA.length)];
 
       window.EJS_player = '#display';
       window.EJS_core = selected.system;
@@ -518,7 +465,6 @@
       initDB();
     }
 
-    // --- GUARDADO LOCAL EN NAVEGADOR ---
     let savesDB;
     function initDB() {
       const dbReq = indexedDB.open("RetroC_SavesDB", 1);
