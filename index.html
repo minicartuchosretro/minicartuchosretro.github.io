@@ -15,10 +15,20 @@
       overflow: hidden; color: #fff;
     }
     
-    /* CONTENEDOR GENERAL */
     .view-container { display: none; width: 100%; height: 100%; overflow-y: auto; padding-bottom: 40px; }
     .active-view { display: block; }
-    .brand-logo { display: block; margin: 16px auto; max-width: 180px; }
+    
+    /* LOGO CON DETECCIÓN DE TOQUES (EASTER EGG) */
+    .brand-logo { 
+      display: block; 
+      margin: 16px auto; 
+      max-width: 180px; 
+      cursor: pointer;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+      transition: transform 0.1s;
+    }
+    .brand-logo:active { transform: scale(0.92); }
 
     /* BOTÓN INSTALAR PWA */
     .btn-install {
@@ -41,20 +51,21 @@
     }
     .btn-install:active { transform: scale(0.98); }
 
-    /* --- VISTA HUB (DOS LISTAS VERTICALES) --- */
+    /* SECCIONES DEL HUB */
     #hub-view { padding: 15px; }
     .section-title {
-      font-size: 1.1rem;
+      font-size: 1.05rem;
       font-weight: 800;
       text-transform: uppercase;
       letter-spacing: 1.5px;
-      margin: 20px 0 10px 0;
+      margin: 22px 0 10px 0;
       display: flex;
       align-items: center;
       gap: 8px;
     }
     .title-unlocked { color: #4ade80; }
     .title-locked { color: #9ca3af; }
+    .title-vault { color: #fbbf24; text-shadow: 0 0 10px rgba(251, 191, 36, 0.3); }
 
     .games-list {
       display: flex;
@@ -96,7 +107,7 @@
     }
 
     .card-name {
-      font-size: 1.05rem;
+      font-size: 1.02rem;
       font-weight: bold;
       color: #fafafa;
       margin-bottom: 3px;
@@ -107,7 +118,7 @@
       color: #a1a1aa;
     }
 
-    /* ESTILO BLOQUEADO */
+    /* TARJETA BLOQUEADA */
     .card-locked {
       background: #121214;
       border-color: #202024;
@@ -117,11 +128,20 @@
       filter: grayscale(100%) brightness(0.4);
       border-color: #27272a;
     }
-    .card-locked .card-name {
-      color: #71717a;
+    .card-locked .card-name { color: #71717a; }
+    .card-locked .card-subtext { color: #52525b; }
+
+    /* TARJETA DORADA DE LA BÓVEDA SECRETA */
+    .card-vault {
+      background: linear-gradient(135deg, #1c1917, #292524);
+      border: 1px solid #d97706;
+      box-shadow: 0 4px 14px rgba(217, 119, 6, 0.25);
     }
-    .card-locked .card-subtext {
-      color: #52525b;
+    .card-vault .card-thumb {
+      border: 1.5px solid #fbbf24;
+    }
+    .card-vault .card-name {
+      color: #fef08a;
     }
 
     .empty-message {
@@ -131,7 +151,7 @@
       padding: 8px 4px;
     }
 
-    /* --- VISTA INFO --- */
+    /* VISTA DETALLES / INFO */
     #info-view { padding: 30px 20px; text-align: center; display: flex; flex-direction: column; align-items: center; }
     #info-cover { width: 170px; height: 170px; object-fit: cover; border-radius: 16px; border: 3px solid #3f3f46; box-shadow: 0 8px 16px rgba(0,0,0,0.8); margin-bottom: 20px; }
     #info-title { font-size: 1.6rem; font-weight: bold; margin-bottom: 12px; }
@@ -144,7 +164,7 @@
     .btn-play { background: #e63946; color: #fff; box-shadow: 0 4px 12px rgba(230,57,70,0.3); }
     .btn-home { background: #27272a; color: #fff; border: 1px solid #3f3f46; }
 
-    /* --- VISTA EMULADOR --- */
+    /* VISTA EMULADOR */
     #emulator-view { position: relative; width: 100%; height: 100%; background: #000; overflow: hidden; }
     #display { width: 100vw; height: calc(100dvh - 45px); position: absolute; top: 45px; left: 0; z-index: 1; }
     #emu-watermark { position: fixed; top: 4px; left: 12px; z-index: 9999999; max-width: 150px; max-height: 36px; object-fit: contain; }
@@ -157,19 +177,18 @@
 
   <script src="./games.js"></script>
 
-  <!-- ==================== VISTA 1: LISTAS VERTICALES ==================== -->
+  <!-- ==================== VISTA 1: HUB ==================== -->
   <div id="hub-view" class="view-container">
-    <img src="./logo.png" alt="Logo" class="brand-logo">
+    <img src="./logo.png" alt="Logo" class="brand-logo" id="secret-logo">
     
-    <!-- BOTÓN DE INSTALACIÓN -->
     <button id="pwa-install-btn" class="btn-install" onclick="triggerPwaInstall()">
       📲 Instalar Aplicación
     </button>
 
     <div style="max-width: 500px; margin: 0 auto;">
-      <!-- LISTA 1: DESBLOQUEADOS -->
+      <!-- LISTA 1: DISPONIBLES -->
       <div class="section-title title-unlocked">
-        <span>🎮</span> Disponibles para jugar (<span id="count-unlocked">0</span>)
+        <span>🎮</span> Disponibles (<span id="count-unlocked">0</span>)
       </div>
       <div class="games-list" id="unlocked-list"></div>
 
@@ -178,6 +197,14 @@
         <span>🔒</span> Bloqueados (<span id="count-locked">0</span>)
       </div>
       <div class="games-list" id="locked-list"></div>
+
+      <!-- LISTA 3: BÓVEDA SECRETA (EASTER EGGS) -->
+      <div id="vault-section" style="display: none;">
+        <div class="section-title title-vault">
+          <span>✨</span> Bóveda Secreta (<span id="count-vault">0</span>)
+        </div>
+        <div class="games-list" id="vault-list"></div>
+      </div>
     </div>
   </div>
 
@@ -212,11 +239,10 @@
     const gameId = params.get("game");
     const isPlaying = params.get("play") === "true";
 
-    // --- CONTROL DEL BOTÓN DE INSTALACIÓN PROPIO ---
+    // --- INSTALACIÓN PWA ---
     let deferredPrompt = null;
     const installBtn = document.getElementById('pwa-install-btn');
 
-    // Si ya se está ejecutando como app instalada (standalone), ocultar el botón
     if (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true) {
       if (installBtn) installBtn.style.display = 'none';
     }
@@ -224,18 +250,14 @@
     window.addEventListener('beforeinstallprompt', (e) => {
       e.preventDefault();
       deferredPrompt = e;
-      if (installBtn && !gameId) {
-        installBtn.style.display = 'flex';
-      }
+      if (installBtn && !gameId) installBtn.style.display = 'flex';
     });
 
     async function triggerPwaInstall() {
       if (deferredPrompt) {
         deferredPrompt.prompt();
         const { outcome } = await deferredPrompt.userChoice;
-        if (outcome === 'accepted') {
-          if (installBtn) installBtn.style.display = 'none';
-        }
+        if (outcome === 'accepted' && installBtn) installBtn.style.display = 'none';
         deferredPrompt = null;
       } else {
         showToast("ℹ️ Toca los tres puntos (⋮) de tu navegador y selecciona 'Instalar aplicación'", 4500);
@@ -248,15 +270,50 @@
       showToast("✅ ¡Mini Retro Cartuchos instalada con éxito!", 3000);
     });
 
-    // SISTEMA DE DESBLOQUEO LOCAL
+    // --- SISTEMA DE DESBLOQUEO LOCAL ---
     let unlockedGames = JSON.parse(localStorage.getItem('retroc_unlocked') || '[]');
 
     if (gameId && GAMES[gameId] && !unlockedGames.includes(gameId)) {
       unlockedGames.push(gameId);
       localStorage.setItem('retroc_unlocked', JSON.stringify(unlockedGames));
+      if (GAMES[gameId].hidden && navigator.vibrate) {
+        navigator.vibrate([100, 50, 100]);
+      }
     }
 
-    // NAVEGACIÓN ENTRE VISTAS
+    // COMPROBACIÓN DE RECOMPENSAS POR COMPLETAR COLECCIÓN
+    checkCollectionRewards();
+
+    function checkCollectionRewards() {
+      const collections = {};
+      Object.keys(GAMES).forEach(key => {
+        const g = GAMES[key];
+        if (g.collection && !g.hidden) {
+          if (!collections[g.collection]) collections[g.collection] = [];
+          collections[g.collection].push(key);
+        }
+      });
+
+      Object.keys(collections).forEach(collName => {
+        const allUnlocked = collections[collName].every(k => unlockedGames.includes(k));
+        if (allUnlocked) {
+          Object.keys(GAMES).forEach(rKey => {
+            const rewardGame = GAMES[rKey];
+            if (rewardGame.reward && rewardGame.requiredCollection === collName) {
+              if (!unlockedGames.includes(rKey)) {
+                unlockedGames.push(rKey);
+                localStorage.setItem('retroc_unlocked', JSON.stringify(unlockedGames));
+                setTimeout(() => {
+                  showToast(`🎉 ¡Colección "${collName}" completada! Se ha desbloqueado una sorpresa en la Bóveda.`, 6000);
+                }, 1000);
+              }
+            }
+          });
+        }
+      });
+    }
+
+    // --- ENRUTAMIENTO ENTRE VISTAS ---
     if (!gameId) {
       document.getElementById('hub-view').classList.add('active-view');
       renderHub();
@@ -268,24 +325,47 @@
       initEmulator();
     }
 
-    // RENDERIZADO DEL MENÚ (Ignora juegos con hidden: true)
+    // --- RENDERIZADO DEL CATÁLOGO (CON SOPORTE PARA BÓVEDA SECRETA) ---
     function renderHub() {
       const unlockedContainer = document.getElementById('unlocked-list');
       const lockedContainer = document.getElementById('locked-list');
+      const vaultContainer = document.getElementById('vault-list');
+      const vaultSection = document.getElementById('vault-section');
       
       unlockedContainer.innerHTML = '';
       lockedContainer.innerHTML = '';
+      vaultContainer.innerHTML = '';
 
       let uCount = 0;
       let lCount = 0;
+      let vCount = 0;
 
       Object.keys(GAMES).forEach(key => {
         const game = GAMES[key];
-        if (game.hidden) return; // Omite juegos secretos como DOOM
-
         const isUnlocked = unlockedGames.includes(key);
-        const card = document.createElement('div');
 
+        // Si es secreto (hidden)
+        if (game.hidden) {
+          if (isUnlocked) {
+            vCount++;
+            const card = document.createElement('div');
+            card.className = 'game-card card-vault';
+            card.onclick = () => window.location.href = `?game=${key}`;
+            card.innerHTML = `
+              <img class="card-thumb" src="${game.icon}" alt="${game.title}">
+              <div class="card-details">
+                <span class="card-name">${game.title}</span>
+                <span class="card-subtext">${game.reward ? '⭐ Recompensa de Colección' : '✨ Cartucho Secreto'}</span>
+              </div>
+              <span style="color:#fbbf24; font-size:1.2rem;">▶</span>
+            `;
+            vaultContainer.appendChild(card);
+          }
+          return; // No aparece en la lista de bloqueados
+        }
+
+        // Catálogo regular
+        const card = document.createElement('div');
         if (isUnlocked) {
           uCount++;
           card.className = 'game-card';
@@ -294,7 +374,7 @@
             <img class="card-thumb" src="${game.icon}" alt="${game.title}">
             <div class="card-details">
               <span class="card-name">${game.title}</span>
-              <span class="card-subtext">Toca para ver detalles</span>
+              <span class="card-subtext">${game.collection ? game.collection : 'Toca para ver detalles'}</span>
             </div>
             <span style="color:#4ade80; font-size:1.2rem;">▶</span>
           `;
@@ -307,7 +387,7 @@
             <img class="card-thumb" src="${game.icon}" alt="${game.title}">
             <div class="card-details">
               <span class="card-name">${game.title}</span>
-              <span class="card-subtext">Bloqueado • Requiere tarjeta NFC</span>
+              <span class="card-subtext">${game.collection ? game.collection + ' • ' : ''}Bloqueado</span>
             </div>
             <span style="color:#52525b; font-size:1.1rem;">🔒</span>
           `;
@@ -317,6 +397,9 @@
 
       document.getElementById('count-unlocked').innerText = uCount;
       document.getElementById('count-locked').innerText = lCount;
+      document.getElementById('count-vault').innerText = vCount;
+
+      vaultSection.style.display = vCount > 0 ? 'block' : 'none';
 
       if (uCount === 0) {
         unlockedContainer.innerHTML = '<div class="empty-message">No tienes cartuchos desbloqueados aún. ¡Acerca uno con NFC!</div>';
@@ -324,6 +407,26 @@
       if (lCount === 0) {
         lockedContainer.innerHTML = '<div class="empty-message">¡Felicidades! Tienes todos los cartuchos desbloqueados.</div>';
       }
+    }
+
+    // --- EASTER EGG: 5 TOQUES EN EL LOGO ---
+    let logoClicks = 0;
+    let clickTimer = null;
+    const logoEl = document.getElementById('secret-logo');
+
+    if (logoEl) {
+      logoEl.addEventListener('click', () => {
+        logoClicks++;
+        clearTimeout(clickTimer);
+        
+        clickTimer = setTimeout(() => { logoClicks = 0; }, 2500);
+
+        if (logoClicks >= 5) {
+          logoClicks = 0;
+          if (navigator.vibrate) navigator.vibrate([80, 50, 80, 50, 150]);
+          showToast("🕵️ Pista Secreta: Existe un cartucho maldito en el inframundo de Marte...", 5000);
+        }
+      });
     }
 
     function renderInfo() {
@@ -340,12 +443,12 @@
     function showToast(text, duration) {
       let t = document.createElement('div');
       t.innerText = text;
-      t.style.cssText = "position:fixed; top:70px; left:50%; transform:translateX(-50%); background:rgba(15,15,18,0.95); color:#fff; padding:12px 20px; border-radius:24px; z-index:9999999; font-weight:bold; font-size:13.5px; text-align:center; box-shadow:0 4px 12px rgba(0,0,0,0.6); border:1px solid rgba(255,255,255,0.15); transition:opacity 0.3s; width:85%; max-width:350px;";
+      t.style.cssText = "position:fixed; top:70px; left:50%; transform:translateX(-50%); background:rgba(15,15,18,0.95); color:#fff; padding:12px 20px; border-radius:24px; z-index:9999999; font-weight:bold; font-size:13.5px; text-align:center; box-shadow:0 4px 14px rgba(0,0,0,0.7); border:1px solid rgba(255,255,255,0.15); transition:opacity 0.3s; width:85%; max-width:360px;";
       document.body.appendChild(t);
       setTimeout(() => { t.style.opacity = '0'; setTimeout(() => t.remove(), 300); }, duration);
     }
 
-    // INICIALIZACIÓN DEL EMULADOR
+    // --- INICIALIZACIÓN DEL EMULADOR ---
     function initEmulator() {
       const selected = GAMES[gameId];
       if (!selected) { document.getElementById("msg").innerHTML = "Error al cargar"; return; }
@@ -405,7 +508,7 @@
       initDB();
     }
 
-    // GUARDADO Y CARGA LOCAL (IndexedDB)
+    // --- GUARDADO LOCAL EN NAVEGADOR (IndexedDB) ---
     let savesDB;
     function initDB() {
       const dbReq = indexedDB.open("RetroC_SavesDB", 1);
