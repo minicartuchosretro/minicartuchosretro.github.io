@@ -50,7 +50,13 @@
       box-shadow: 0 4px 12px rgba(59, 130, 246, 0.35);
     }
     .btn-install:active { transform: scale(0.98); }
-
+    /* OCULTAR BOTÓN DE INSTALACIÓN SI LA APP YA ESTÁ INSTALADA */
+    @media all and (display-mode: standalone) {
+      #pwa-install-btn {
+        display: none !important;
+      }
+    }
+    
     /* PESTAÑAS */
     #hub-view { padding: 15px; }
     .tabs-container {
