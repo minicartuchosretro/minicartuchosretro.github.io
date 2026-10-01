@@ -20,12 +20,13 @@
     
     @media all and (display-mode: standalone) { #pwa-install-btn { display: none !important; } }
     
-    /* ANIMACIONES DE DESBLOQUEO (NORMAL Y ÉPICO) */
+    /* OVERLAY Y ANIMACIONES DE DESBLOQUEO */
     #unlock-overlay {
       position: fixed; top: 0; left: 0; width: 100vw; height: 100dvh;
-      background: radial-gradient(circle, rgba(217, 119, 6, 0.95) 0%, #000 90%);
+      background: radial-gradient(circle, rgba(20, 20, 25, 0.98) 0%, #000 90%);
       z-index: 99999999; display: flex; flex-direction: column;
       align-items: center; justify-content: center; opacity: 0; pointer-events: none;
+      transition: opacity 0.3s ease;
     }
     
     #unlock-overlay.show-normal { animation: fastUnlock 2.2s cubic-bezier(0.1, 0.8, 0.1, 1) forwards; }
@@ -47,6 +48,33 @@
       100% { opacity: 0; transform: scale(1.5); filter: brightness(0); }
     }
 
+    /* PANTALLA PREVIA DE INTERACCIÓN (TAP TO INSERT) */
+    .tap-box {
+      display: flex; flex-direction: column; align-items: center;
+      justify-content: center; text-align: center; cursor: pointer;
+      user-select: none; -webkit-tap-highlight-color: transparent; padding: 30px;
+    }
+    .cartridge-icon-anim {
+      font-size: 5rem; margin-bottom: 18px;
+      animation: bounceSlot 1.2s infinite ease-in-out;
+      filter: drop-shadow(0 0 20px rgba(251, 191, 36, 0.6));
+    }
+    @keyframes bounceSlot {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-16px) scale(1.08); }
+    }
+    .tap-title {
+      font-size: 1.5rem; font-weight: 900; letter-spacing: 2px;
+      color: #fbbf24; text-shadow: 0 0 15px rgba(251, 191, 36, 0.7); margin-bottom: 8px;
+    }
+    .tap-subtitle {
+      font-size: 0.95rem; color: #e4e4e7; animation: pulseText 1.5s infinite; letter-spacing: 1px;
+    }
+    @keyframes pulseText {
+      0%, 100% { opacity: 0.4; }
+      50% { opacity: 1; }
+    }
+
     .brand-logo { 
       display: block; margin: 16px auto; max-width: 180px; cursor: pointer;
       user-select: none; -webkit-tap-highlight-color: transparent; transition: transform 0.1s;
@@ -63,12 +91,20 @@
 
     #hub-view { padding: 15px; }
     .tabs-container {
-      display: flex; background: #18181b; border-radius: 14px; padding: 6px; margin: 0 auto 20px auto;
+      display: flex; background: #18181b; border-radius: 14px; padding: 6px; margin: 0 auto 12px auto;
       max-width: 500px; border: 1px solid #27272a; box-shadow: 0 4px 10px rgba(0,0,0,0.4);
     }
-        /* MENÚ DE FILTROS POR CONSOLA */
+    .tab {
+      flex: 1; text-align: center; padding: 10px 5px; font-size: 0.85rem; font-weight: 700; color: #a1a1aa;
+      border-radius: 10px; cursor: pointer; transition: all 0.3s ease; user-select: none; -webkit-tap-highlight-color: transparent;
+    }
+    .tab.active { background: #27272a; color: #fff; box-shadow: 0 2px 8px rgba(0,0,0,0.3); }
+    #tab-unlocked.active { color: #4ade80; }
+    #tab-vault.active { background: linear-gradient(135deg, #d97706, #b45309); color: #fff; box-shadow: 0 4px 12px rgba(217, 119, 6, 0.4); }
+
+    /* FILTROS POR CONSOLA */
     .system-filters {
-      display: flex; gap: 8px; margin: 0 auto 15px auto; max-width: 500px;
+      display: flex; gap: 8px; margin: 0 auto 16px auto; max-width: 500px;
       overflow-x: auto; padding-bottom: 5px; scrollbar-width: none;
     }
     .system-filters::-webkit-scrollbar { display: none; }
@@ -78,13 +114,6 @@
       cursor: pointer; white-space: nowrap; transition: all 0.2s;
     }
     .sys-btn.active { background: #3b82f6; color: #fff; border-color: #3b82f6; }
-    .tab {
-      flex: 1; text-align: center; padding: 10px 5px; font-size: 0.85rem; font-weight: 700; color: #a1a1aa;
-      border-radius: 10px; cursor: pointer; transition: all 0.3s ease; user-select: none; -webkit-tap-highlight-color: transparent;
-    }
-    .tab.active { background: #27272a; color: #fff; box-shadow: 0 2px 8px rgba(0,0,0,0.3); }
-    #tab-unlocked.active { color: #4ade80; }
-    #tab-vault.active { background: linear-gradient(135deg, #d97706, #b45309); color: #fff; box-shadow: 0 4px 12px rgba(217, 119, 6, 0.4); }
 
     .tab-content { display: none; animation: fadeIn 0.25s ease-out forwards; }
     .active-tab-content { display: block; }
@@ -143,34 +172,41 @@
 </head>
 <body>
 
-  <!-- OVERLAY DE DESTELLO CON IDs -->
+  <!-- OVERLAY DE DESBLOQUEO INTERACTIVO -->
   <div id="unlock-overlay">
-    <span id="unlock-icon" style="font-size: 4.5rem; text-shadow: 0 0 20px #fbbf24;">✨</span>
-    <h2 id="unlock-text" style="margin-top: 15px; text-shadow: 0 0 15px #fbbf24; color: #fff; text-align: center;">¡Cartucho Encontrado!</h2>
+    <!-- FASE 1: Toque obligatorio para habilitar sonido en iPhone/Android -->
+    <div id="tap-prompt" class="tap-box">
+      <div class="cartridge-icon-anim">📼</div>
+      <h2 class="tap-title">CARTUCHO DETECTADO</h2>
+      <p class="tap-subtitle">Toca la pantalla para insertar...</p>
+    </div>
+
+    <!-- FASE 2: Animación y Sonido -->
+    <div id="unlock-content" style="display: none; flex-direction: column; align-items: center; justify-content: center;">
+      <span id="unlock-icon" style="font-size: 4.5rem; text-shadow: 0 0 20px #fbbf24;">✨</span>
+      <h2 id="unlock-text" style="margin-top: 15px; text-shadow: 0 0 15px #fbbf24; color: #fff; text-align: center;">¡Cartucho Insertado!</h2>
+    </div>
   </div>
 
   <!-- VISTA 1: HUB -->
   <div id="hub-view" class="view-container">
     <img src="./logo.png" alt="Logo" class="brand-logo" id="secret-logo">
     <button id="pwa-install-btn" class="btn-install" onclick="triggerPwaInstall()">📲 Instalar Aplicación</button>
-    <div class="tabs-container">
-          <!-- PESTAÑAS PRINCIPALES -->
+    
     <div class="tabs-container">
       <div class="tab active" id="tab-unlocked" onclick="switchTab('unlocked')">🎮 Míos (<span id="count-unlocked">0</span>)</div>
       <div class="tab" id="tab-locked" onclick="switchTab('locked')">🔒 Faltan (<span id="count-locked">0</span>)</div>
       <div class="tab" id="tab-vault" onclick="switchTab('vault')" style="display: none;">✨ Bóveda (<span id="count-vault">0</span>)</div>
     </div>
-    <!-- NUEVO: MENÚ DE FILTROS POR SISTEMA -->
+
+    <!-- FILTROS POR CONSOLA -->
     <div class="system-filters" id="system-filters">
       <button class="sys-btn active" onclick="filterSystem('all', this)">🕹️ Todos</button>
       <button class="sys-btn" onclick="filterSystem('snes', this)">SNES</button>
       <button class="sys-btn" onclick="filterSystem('gba', this)">GBA</button>
       <button class="sys-btn" onclick="filterSystem('nes', this)">NES</button>
     </div>
-      <div class="tab active" id="tab-unlocked" onclick="switchTab('unlocked')">🎮 Míos (<span id="count-unlocked">0</span>)</div>
-      <div class="tab" id="tab-locked" onclick="switchTab('locked')">🔒 Faltan (<span id="count-locked">0</span>)</div>
-      <div class="tab" id="tab-vault" onclick="switchTab('vault')" style="display: none;">✨ Bóveda (<span id="count-vault">0</span>)</div>
-    </div>
+
     <div style="max-width: 500px; margin: 0 auto;">
       <div id="view-unlocked" class="tab-content active-tab-content"><div class="games-list" id="unlocked-list"></div></div>
       <div id="view-locked" class="tab-content"><div class="games-list" id="locked-list"></div></div>
@@ -201,11 +237,11 @@
     <div id="display"></div>
   </div>
 
-  <!-- IMPORTACIÓN MODULAR CON VERSIÓN v5 -->
-  <script src="./games.js?v=5"></script>
-  <script src="./frases.js?v=5"></script>
-  <script src="./pistas.js?v=5"></script>
-  <script src="./emulator.js?v=5"></script>
-  <script src="./app.js?v=5"></script>
+  <!-- IMPORTACIÓN CON CACHÉ v6 -->
+  <script src="./games.js?v=6"></script>
+  <script src="./frases.js?v=6"></script>
+  <script src="./pistas.js?v=6"></script>
+  <script src="./emulator.js?v=6"></script>
+  <script src="./app.js?v=6"></script>
 </body>
 </html>
