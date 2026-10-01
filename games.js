@@ -1,52 +1,58 @@
 const GAMES = {
-  "doom": { 
-    title: "DOOM", 
-    rom: "./roms/doom.sfc", 
-    system: "snes", 
-    icon: "./icons/doom.png",
-    hidden: true,
-    desc: "El clásico shooter que definió el género. Enfréntate a las hordas demoníacas en las instalaciones de Marte en esta brutal e icónica aventura secreta."
-  },
-  "mk2":  { 
-    title: "Mortal Kombat II", 
-    rom: "./roms/mk2.sfc", 
-    system: "snes", 
-    icon: "./icons/mk2.png",
-    desc: "El sangriento torneo continúa. Descubre nuevos luchadores, escenarios y Fatalities en uno de los juegos de lucha más legendarios de la historia."
-  },
+  // COLECCIÓN 1: TRILOGÍA KONG (SNES)
   "dkc1": { 
     title: "Donkey Kong Country", 
     rom: "./roms/dkc1.smc", 
     system: "snes", 
     icon: "./icons/dkc1.png",
-    desc: "Acompaña a Donkey Kong y Diddy Kong en una aventura épica y visualmente revolucionaria para recuperar su reserva de bananas robada por los Kremlings."
+    collection: "Trilogía DK", 
+    desc: "Acompaña a Donkey Kong y Diddy Kong en una aventura revolucionaria para recuperar su reserva de bananas."
   },
   "dkc2": { 
     title: "Donkey Kong Country 2", 
     rom: "./roms/dkc2.sfc", 
     system: "snes", 
     icon: "./icons/dkc2.png",
-    desc: "¡Diddy y Dixie al rescate! Explora los peligros de la Isla Cocodrilo y enfréntate al Capitán K. Rool para salvar al mismísimo Donkey Kong."
+    collection: "Trilogía DK", 
+    desc: "¡Diddy y Dixie al rescate! Explora los peligros de la Isla Cocodrilo y enfréntate al Capitán K. Rool."
   },
   "dkc3": { 
     title: "Donkey Kong Country 3", 
     rom: "./roms/dkc3.sfc", 
     system: "snes", 
     icon: "./icons/dkc3.png",
-    desc: "Dixie y el pequeño Kiddy Kong se adentran en el misterioso Kremisferio Norte. Descubre nuevos secretos y vehículos en el gran cierre de la trilogía."
+    collection: "Trilogía DK",
+    desc: "Dixie y el pequeño Kiddy Kong se adentran en el misterioso Kremisferio Norte en el cierre de la trilogía."
   },
-  "ki":   { 
-    title: "Killer Instinct", 
-    rom: "./roms/ki.sfc", 
+
+  // PREMIO AUTOMÁTICO DE COLECCIÓN
+  "mario_world": { 
+    title: "Super Mario World", 
+    rom: "./roms/smw.smc", 
     system: "snes", 
-    icon: "./icons/ki.png",
-    desc: "Lucha sin cuartel con gráficos renderizados de vanguardia. Domina a personajes icónicos y ejecuta combos interminables. ¡C-C-C-Combo Breaker!"
+    icon: "./icons/smw.png",
+    hidden: true,
+    reward: true,
+    requiredCollection: "Trilogía DK",
+    desc: "¡Felicidades por completar la Trilogía DK! Como recompensa, has desbloqueado este clásico legendario."
   },
+
+  // GAME BOY ADVANCE (GBA)
   "metroid_zm": {
     title: "Metroid: Zero Mission",
     rom: "./roms/metroid_zm.gba",
-    system: "gba", // El emulador usará el núcleo de Game Boy Advance
+    system: "gba",
     icon: "./icons/metroid_zm.png",
     desc: "Revive la primera misión de Samus Aran en el planeta Zebes con gráficos y habilidades renovadas."
+  },
+
+  // CARTUCHO SECRETO FÍSICO (LA BÓVEDA)
+  "doom": { 
+    title: "DOOM", 
+    rom: "./roms/doom.sfc", 
+    system: "snes", 
+    icon: "./icons/doom.png",
+    hidden: true,
+    desc: "El clásico shooter que definió el género. Enfréntate a las hordas demoníacas en las instalaciones de Marte."
   }
 };
