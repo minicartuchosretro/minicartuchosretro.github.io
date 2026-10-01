@@ -61,13 +61,13 @@ if (gameId && GAMES[gameId] && !unlockedGames.includes(gameId)) {
       overlayText.innerText = "¡Has descubierto un Cartucho Legendario!";
       overlayIcon.style.textShadow = "0 0 40px #fef08a";
       overlayText.style.textShadow = "0 0 25px #fef08a";
-      overlayText.style.color = "#4ade80"; // Verde místico
+      overlayText.style.color = "#4ade80"; 
       
       const secretAudio = new Audio('./secret.mp3');
       secretAudio.play().catch(e => console.log("Audio bloqueado por el navegador", e));
       
       overlay.classList.add('show-secret');
-      if (navigator.vibrate) navigator.vibrate([200, 100, 200, 100, 800]); // Vibración épica
+      if (navigator.vibrate) navigator.vibrate([200, 100, 200, 100, 800]); 
       setTimeout(() => overlay.classList.remove('show-secret'), 4500);
       
     } else {
@@ -111,7 +111,6 @@ function checkCollectionRewards() {
             localStorage.setItem('retroc_unlocked', JSON.stringify(unlockedGames));
             sessionStorage.setItem('newly_unlocked', rKey);
             
-            // Sonido de Colección Completada
             setTimeout(() => {
               const collAudio = new Audio('./collection.mp3');
               collAudio.play().catch(e => console.log("Audio bloqueado", e));
@@ -157,12 +156,16 @@ function renderHub() {
     const isUnlocked = unlockedGames.includes(key);
     const card = document.createElement('div');
     card.id = `card-${key}`;
+    
+    // Extracción de plataforma para etiquetado visual y filtro
+    const sysUpper = (game.system || 'N/A').toUpperCase();
+    card.setAttribute('data-system', game.system || 'unknown');
 
     if (game.hidden) {
       if (isUnlocked) {
         vCount++; card.className = 'game-card card-vault';
         card.onclick = () => window.location.href = `?game=${key}`;
-        card.innerHTML = `<img class="card-thumb" src="${game.icon}" alt="${game.title}"><div class="card-details"><span class="card-name">${game.title}</span><span class="card-subtext">${game.reward ? '⭐ Recompensa de Colección' : '✨ Cartucho Secreto'}</span></div><span style="color:#fbbf24; font-size:1.2rem;">▶</span>`;
+        card.innerHTML = `<img class="card-thumb" src="${game.icon}" alt="${game.title}"><div class="card-details"><span class="card-name">${game.title}</span><span class="card-subtext"><b style="color:#d97706;">[${sysUpper}]</b> ${game.reward ? '⭐ Recompensa' : '✨ Cartucho Secreto'}</span></div><span style="color:#fbbf24; font-size:1.2rem;">▶</span>`;
         vaultContainer.appendChild(card);
       }
       return; 
@@ -171,12 +174,12 @@ function renderHub() {
     if (isUnlocked) {
       uCount++; card.className = 'game-card';
       card.onclick = () => window.location.href = `?game=${key}`;
-      card.innerHTML = `<img class="card-thumb" src="${game.icon}" alt="${game.title}"><div class="card-details"><span class="card-name">${game.title}</span><span class="card-subtext">${game.collection ? game.collection : 'Toca para ver detalles'}</span></div><span style="color:#4ade80; font-size:1.2rem;">▶</span>`;
+      card.innerHTML = `<img class="card-thumb" src="${game.icon}" alt="${game.title}"><div class="card-details"><span class="card-name">${game.title}</span><span class="card-subtext"><b style="color:#3b82f6;">[${sysUpper}]</b> ${game.collection ? game.collection : 'Toca para jugar'}</span></div><span style="color:#4ade80; font-size:1.2rem;">▶</span>`;
       unlockedContainer.appendChild(card);
     } else {
       lCount++; card.className = 'game-card card-locked';
       card.onclick = () => showToast("🔒 Escanea el cartucho NFC físico para desbloquear", 3000);
-      card.innerHTML = `<img class="card-thumb" src="${game.icon}" alt="${game.title}"><div class="card-details"><span class="card-name">${game.title}</span><span class="card-subtext">${game.collection ? game.collection + ' • ' : ''}Bloqueado</span></div><span style="color:#52525b; font-size:1.1rem;">🔒</span>`;
+      card.innerHTML = `<img class="card-thumb" src="${game.icon}" alt="${game.title}"><div class="card-details"><span class="card-name">${game.title}</span><span class="card-subtext"><b style="color:#71717a;">[${sysUpper}]</b> ${game.collection ? game.collection + ' • ' : ''}Bloqueado</span></div><span style="color:#52525b; font-size:1.1rem;">🔒</span>`;
       lockedContainer.appendChild(card);
     }
   });
@@ -213,6 +216,20 @@ if (logoEl) {
     if (logoClicks >= 5) {
       logoClicks = 0; if (navigator.vibrate) navigator.vibrate([80, 50, 80, 50, 150]);
       showToast(PISTAS_SECRETAS[Math.floor(Math.random() * PISTAS_SECRETAS.length)], 5500);
+    }
+  });
+}
+
+// --- FILTRO POR SISTEMA ---
+function filterSystem(sys, btnElement) {
+  document.querySelectorAll('.sys-btn').forEach(btn => btn.classList.remove('active'));
+  btnElement.classList.add('active');
+
+  document.querySelectorAll('.game-card').forEach(card => {
+    if (sys === 'all' || card.getAttribute('data-system') === sys) {
+      card.style.display = 'flex';
+    } else {
+      card.style.display = 'none';
     }
   });
 }
