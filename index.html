@@ -66,6 +66,18 @@
       display: flex; background: #18181b; border-radius: 14px; padding: 6px; margin: 0 auto 20px auto;
       max-width: 500px; border: 1px solid #27272a; box-shadow: 0 4px 10px rgba(0,0,0,0.4);
     }
+        /* MENÚ DE FILTROS POR CONSOLA */
+    .system-filters {
+      display: flex; gap: 8px; margin: 0 auto 15px auto; max-width: 500px;
+      overflow-x: auto; padding-bottom: 5px; scrollbar-width: none;
+    }
+    .system-filters::-webkit-scrollbar { display: none; }
+    .sys-btn {
+      background: #18181b; color: #a1a1aa; border: 1px solid #27272a;
+      border-radius: 20px; padding: 6px 14px; font-size: 0.8rem; font-weight: bold;
+      cursor: pointer; white-space: nowrap; transition: all 0.2s;
+    }
+    .sys-btn.active { background: #3b82f6; color: #fff; border-color: #3b82f6; }
     .tab {
       flex: 1; text-align: center; padding: 10px 5px; font-size: 0.85rem; font-weight: 700; color: #a1a1aa;
       border-radius: 10px; cursor: pointer; transition: all 0.3s ease; user-select: none; -webkit-tap-highlight-color: transparent;
@@ -142,6 +154,19 @@
     <img src="./logo.png" alt="Logo" class="brand-logo" id="secret-logo">
     <button id="pwa-install-btn" class="btn-install" onclick="triggerPwaInstall()">📲 Instalar Aplicación</button>
     <div class="tabs-container">
+          <!-- PESTAÑAS PRINCIPALES -->
+    <div class="tabs-container">
+      <div class="tab active" id="tab-unlocked" onclick="switchTab('unlocked')">🎮 Míos (<span id="count-unlocked">0</span>)</div>
+      <div class="tab" id="tab-locked" onclick="switchTab('locked')">🔒 Faltan (<span id="count-locked">0</span>)</div>
+      <div class="tab" id="tab-vault" onclick="switchTab('vault')" style="display: none;">✨ Bóveda (<span id="count-vault">0</span>)</div>
+    </div>
+    <!-- NUEVO: MENÚ DE FILTROS POR SISTEMA -->
+    <div class="system-filters" id="system-filters">
+      <button class="sys-btn active" onclick="filterSystem('all', this)">🕹️ Todos</button>
+      <button class="sys-btn" onclick="filterSystem('snes', this)">SNES</button>
+      <button class="sys-btn" onclick="filterSystem('gba', this)">GBA</button>
+      <button class="sys-btn" onclick="filterSystem('nes', this)">NES</button>
+    </div>
       <div class="tab active" id="tab-unlocked" onclick="switchTab('unlocked')">🎮 Míos (<span id="count-unlocked">0</span>)</div>
       <div class="tab" id="tab-locked" onclick="switchTab('locked')">🔒 Faltan (<span id="count-locked">0</span>)</div>
       <div class="tab" id="tab-vault" onclick="switchTab('vault')" style="display: none;">✨ Bóveda (<span id="count-vault">0</span>)</div>
