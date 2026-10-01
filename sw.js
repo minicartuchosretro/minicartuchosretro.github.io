@@ -1,4 +1,4 @@
-const CACHE_NAME = 'retroc-v5';
+const CACHE_NAME = 'retroc-v6';
 const ASSETS = [
   './',
   './index.html',
