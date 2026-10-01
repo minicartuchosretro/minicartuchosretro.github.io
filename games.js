@@ -41,5 +41,12 @@ const GAMES = {
     system: "snes", 
     icon: "./icons/ki.png",
     desc: "Lucha sin cuartel con gráficos renderizados de vanguardia. Domina a personajes icónicos y ejecuta combos interminables. ¡C-C-C-Combo Breaker!"
+  },
+  "metroid_zm": {
+    title: "Metroid: Zero Mission",
+    rom: "./roms/metroid_zm.gba",
+    system: "gba", // El emulador usará el núcleo de Game Boy Advance
+    icon: "./icons/metroid_zm.png",
+    desc: "Revive la primera misión de Samus Aran en el planeta Zebes con gráficos y habilidades renovadas."
   }
 };
