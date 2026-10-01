@@ -41,50 +41,81 @@ window.addEventListener('appinstalled', () => {
   showToast("✅ ¡Mini Retro Cartuchos instalada con éxito!", 3000);
 });
 
-// --- SISTEMA DE DESBLOQUEO ---
+// --- SISTEMA DE DESBLOQUEO CON INTERACCIÓN PREVIA ---
 let unlockedGames = JSON.parse(localStorage.getItem('retroc_unlocked') || '[]');
 
 if (gameId && GAMES[gameId] && !unlockedGames.includes(gameId)) {
   unlockedGames.push(gameId);
   localStorage.setItem('retroc_unlocked', JSON.stringify(unlockedGames));
   sessionStorage.setItem('newly_unlocked', gameId);
-  
-  const isSecret = GAMES[gameId].hidden;
+
+  const overlay = document.getElementById('unlock-overlay');
+  const tapPrompt = document.getElementById('tap-prompt');
+  const unlockContent = document.getElementById('unlock-content');
   const overlayIcon = document.getElementById('unlock-icon');
   const overlayText = document.getElementById('unlock-text');
-  const overlay = document.getElementById('unlock-overlay');
-  
-  if (overlayIcon && overlayText && overlay) {
-    if (isSecret) {
-      // Estilo Zelda Épico
-      overlayIcon.innerText = "🗡️"; 
-      overlayText.innerText = "¡Has descubierto un Cartucho Legendario!";
-      overlayIcon.style.textShadow = "0 0 40px #fef08a";
-      overlayText.style.textShadow = "0 0 25px #fef08a";
-      overlayText.style.color = "#4ade80"; 
-      
-      const secretAudio = new Audio('./secret.mp3');
-      secretAudio.play().catch(e => console.log("Audio bloqueado por el navegador", e));
-      
-      overlay.classList.add('show-secret');
-      if (navigator.vibrate) navigator.vibrate([200, 100, 200, 100, 800]); 
-      setTimeout(() => overlay.classList.remove('show-secret'), 4500);
-      
-    } else {
-      // Estilo Cartucho Normal
-      overlayIcon.innerText = "✨";
-      overlayText.innerText = "¡Cartucho Encontrado!";
-      overlayIcon.style.textShadow = "0 0 20px #fbbf24";
-      overlayText.style.textShadow = "0 0 15px #fbbf24";
-      overlayText.style.color = "#fff";
 
-      const normalAudio = new Audio('./normal.mp3');
-      normalAudio.play().catch(e => console.log("Audio bloqueado por el navegador", e));
-      
-      overlay.classList.add('show-normal');
-      if (navigator.vibrate) navigator.vibrate([100, 150, 100, 150]);
-      setTimeout(() => overlay.classList.remove('show-normal'), 2200);
-    }
+  if (overlay && tapPrompt && unlockContent) {
+    // 1. Mostrar pantalla de toque
+    overlay.style.opacity = '1';
+    overlay.style.pointerEvents = 'all';
+    tapPrompt.style.display = 'flex';
+    unlockContent.style.display = 'none';
+
+    // 2. Disparar ritual al interactuar (desbloquea el audio en móviles)
+    const triggerUnlockRitual = () => {
+      overlay.removeEventListener('click', triggerUnlockRitual);
+      overlay.removeEventListener('touchstart', triggerUnlockRitual);
+
+      tapPrompt.style.display = 'none';
+      unlockContent.style.display = 'flex';
+
+      const isSecret = GAMES[gameId].hidden;
+
+      if (isSecret) {
+        // Zelda Épico
+        overlayIcon.innerText = "🗡️";
+        overlayText.innerText = "¡Has descubierto un Cartucho Legendario!";
+        overlayIcon.style.textShadow = "0 0 40px #fef08a";
+        overlayText.style.textShadow = "0 0 25px #fef08a";
+        overlayText.style.color = "#4ade80";
+
+        const secretAudio = new Audio('./secret.mp3');
+        secretAudio.play().catch(e => console.log("Audio bloqueado:", e));
+
+        overlay.classList.add('show-secret');
+        if (navigator.vibrate) navigator.vibrate([200, 100, 200, 100, 800]);
+
+        setTimeout(() => {
+          overlay.classList.remove('show-secret');
+          overlay.style.opacity = '0';
+          overlay.style.pointerEvents = 'none';
+        }, 4500);
+
+      } else {
+        // Cartucho Común
+        overlayIcon.innerText = "✨";
+        overlayText.innerText = "¡Cartucho Insertado!";
+        overlayIcon.style.textShadow = "0 0 20px #fbbf24";
+        overlayText.style.textShadow = "0 0 15px #fbbf24";
+        overlayText.style.color = "#fff";
+
+        const normalAudio = new Audio('./normal.mp3');
+        normalAudio.play().catch(e => console.log("Audio bloqueado:", e));
+
+        overlay.classList.add('show-normal');
+        if (navigator.vibrate) navigator.vibrate([100, 150, 100, 150]);
+
+        setTimeout(() => {
+          overlay.classList.remove('show-normal');
+          overlay.style.opacity = '0';
+          overlay.style.pointerEvents = 'none';
+        }, 2200);
+      }
+    };
+
+    overlay.addEventListener('click', triggerUnlockRitual);
+    overlay.addEventListener('touchstart', triggerUnlockRitual, { passive: true });
   }
 }
 
@@ -157,7 +188,6 @@ function renderHub() {
     const card = document.createElement('div');
     card.id = `card-${key}`;
     
-    // Extracción de plataforma para etiquetado visual y filtro
     const sysUpper = (game.system || 'N/A').toUpperCase();
     card.setAttribute('data-system', game.system || 'unknown');
 
